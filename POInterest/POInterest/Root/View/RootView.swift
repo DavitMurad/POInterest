@@ -11,25 +11,23 @@ struct RootView: View {
     var body: some View {
         if #available(iOS 26.0, *) {
             TabView {
-                Tab("Place", systemImage: "camera.viewfinder") {
+                Tab("Explore", systemImage: "camera.viewfinder") {
                     PreARView()
                 }
                 
-                Tab("Place", systemImage: "heart.fill") {
+                Tab("Saved Places", systemImage: "mappin.and.ellipse") {
                     PreARView()
                 }
-                Tab("Place", systemImage: "camera.viewfinder") {
+                Tab("Settings", systemImage: "gear") {
                     PreARView()
                 }
                 
             }
-            .glassEffect()
-        } else {
-            // Fallback on earlier versions
+            .conditionaGlassEffect()
         }
     }
 }
 
-#Preview {
-    RootView()
-}
+//#Preview {
+//    RootView()
+//}
