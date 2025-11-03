@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct RootView: View {
+    
+    let userName = AuthManager.shared.userName
     var body: some View {
-        if #available(iOS 26.0, *) {
+        NavigationStack {
             TabView {
                 Tab("Explore", systemImage: "camera.viewfinder") {
                     PreARView()
@@ -18,16 +20,19 @@ struct RootView: View {
                 Tab("Saved Places", systemImage: "mappin.and.ellipse") {
                     PreARView()
                 }
-                Tab("Settings", systemImage: "gear") {
-                    PreARView()
-                }
                 
+                Tab("Settings", systemImage: "gear") {
+                    SettingsView()
+                }
             }
             .conditionaGlassEffect()
+            
         }
-    }
+        .navigationBarBackButtonHidden()
+       
+     }
 }
 
-//#Preview {
-//    RootView()
-//}
+#Preview {
+    RootView()
+}

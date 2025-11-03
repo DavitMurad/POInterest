@@ -19,6 +19,8 @@ final class RegisterViewModel: ObservableObject {
     @Published var nameErrorMessage: String?
     @Published var passwordErrorMessage: String?
     @Published var formError: String?
+
+    @Published var isRegisterSuccess = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -74,24 +76,25 @@ final class RegisterViewModel: ObservableObject {
                 password: password,
                 name: name
             )
+            isRegisterSuccess = true
             print("Registration successful for UID: \(returnedUser.uid), Name: \(returnedUser.name ?? "N/A")")
         } catch {
             formError = "This email is already registered."
         }
     }
     
-    private func isNameValid(_ name: String) -> Bool {
+     func isNameValid(_ name: String) -> Bool {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         let nameRegex = /^[A-Za-zÀ-ÿ\s'-]{2,50}$/
         return !trimmed.isEmpty && trimmed.wholeMatch(of: nameRegex) != nil
     }
     
-    private func isEmailValid(_ email: String) -> Bool {
+     func isEmailValid(_ email: String) -> Bool {
         let emailRegex = /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$/
         return email.wholeMatch(of: emailRegex) != nil
     }
     
-    private func isPasswordSecure(_ password: String) -> Bool {
+     func isPasswordSecure(_ password: String) -> Bool {
         guard password.count >= 8 else { return false }
         
         let hasUppercase = password.range(of: "[A-Z]", options: .regularExpression) != nil

@@ -34,7 +34,7 @@ struct UnitsView: View {
                     }
                 }
             }
-            NavigationLink("Log in", destination: {
+            NavigationLink("Procceed", destination: {
                 RootView()
             })
           
@@ -46,6 +46,7 @@ struct UnitsView: View {
             .padding()
             
         }
+        .navigationBarBackButtonHidden()
         
     }
 }

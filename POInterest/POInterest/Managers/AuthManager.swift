@@ -23,9 +23,18 @@ struct AuthDataResultModel {
 
 final class AuthManager {
     static let shared = AuthManager()
+    private init() {}
     
-    private init() {
-        
+    var currentUser: User? {
+        Auth.auth().currentUser
+    }
+    
+    var userName: String? {
+        currentUser?.displayName
+    }
+    
+    var userEmail: String? {
+        currentUser?.email
     }
     
     func createUser(email: String, password: String, name: String) async throws -> AuthDataResultModel {
@@ -36,8 +45,16 @@ final class AuthManager {
         
         try await changeRequest.commitChanges()
         try await authDataResult.user.reload()
-        print(authDataResult.user.displayName)
         return AuthDataResultModel(user: authDataResult.user)
         
+    }
+    
+    func loginUser(email: String, password: String) async throws -> AuthDataResultModel {
+        let authDataResult = try await Auth.auth().signIn(withEmail: email, password: password)
+        return AuthDataResultModel(user: authDataResult.user)
+    }
+    
+    func signOut() throws {
+        try Auth.auth().signOut()
     }
 }

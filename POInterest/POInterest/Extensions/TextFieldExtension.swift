@@ -17,3 +17,14 @@ extension TextField {
         
     }
 }
+
+extension SecureField {
+    func customTextFieldStyle() -> some View {
+        return self
+            .padding()
+            .background(Color.gray.opacity(0.2))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .font(.headline)
+        
+    }
+}

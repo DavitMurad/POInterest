@@ -14,7 +14,11 @@ struct POInterestApp: App {
     
     var body: some Scene {
         WindowGroup {
-           LoginView()
+            if let _ = AuthManager.shared.currentUser {
+                RootView()
+            } else {
+                LoginView()
+            }
         }
     }
 }

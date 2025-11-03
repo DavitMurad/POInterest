@@ -10,7 +10,7 @@ import SwiftUI
 struct RegisterView: View {
     
     @StateObject private var registerVM = RegisterViewModel()
-    
+    @State var isRegistered = false
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -38,7 +38,7 @@ struct RegisterView: View {
                                     .font(.caption)
                                     .foregroundStyle(.red)
                             }
-                            TextField("Password", text: $registerVM.password)
+                            SecureField("Password", text: $registerVM.password)
                                 .customTextFieldStyle()
                             if let error = registerVM.passwordErrorMessage {
                                 Text(error)
@@ -56,7 +56,12 @@ struct RegisterView: View {
                             
                             Button("Register") {
                                 Task {
-                                    await registerVM.signUp()
+                                    Task {
+                                        await registerVM.signUp()
+                                        if registerVM.isRegisterSuccess {
+                                            isRegistered = true
+                                        }
+                                    }
                                 }
                                 
                                 
@@ -67,6 +72,9 @@ struct RegisterView: View {
                             .foregroundColor(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .disabled(!registerVM.isFormValid)
+                            .navigationDestination(isPresented: $isRegistered) {
+                                UnitsView()
+                            }
                             
                             HStack {
                                 Button("Sign up with Google") {
@@ -104,6 +112,6 @@ struct RegisterView: View {
     }
 }
 
-#Preview {
-    RegisterView()
-}
+//#Preview {
+//    RegisterView()
+//}
