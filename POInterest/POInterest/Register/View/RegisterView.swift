@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @State var firstname = ""
+    
+    @StateObject private var registerVM = RegisterViewModel()
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -20,14 +22,43 @@ struct RegisterView: View {
                     
                     ZStack {
                         VStack(spacing: 15) {
-                            TextField("Name", text: $firstname)
+                            TextField("Name", text: $registerVM.name)
                                 .customTextFieldStyle()
-                            TextField("Email", text: $firstname)
+                            if let error = registerVM.nameErrorMessage {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                            }
+                            TextField("Email", text: $registerVM.email)
                                 .customTextFieldStyle()
-                            TextField("Password", text: $firstname)
+                                .keyboardType(.emailAddress)
+                            
+                            if let error = registerVM.emailErrorMessage {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                            }
+                            TextField("Password", text: $registerVM.password)
                                 .customTextFieldStyle()
+                            if let error = registerVM.passwordErrorMessage {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                            }
+                            
+                            if let error = registerVM.formError {
+                                Text(error)
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.red)
+                                    .multilineTextAlignment(.center)
+                            }
                             
                             Button("Register") {
+                                Task {
+                                    await registerVM.signUp()
+                                }
+                                
                                 
                             }
                             .frame(maxWidth: .infinity)
@@ -35,7 +66,7 @@ struct RegisterView: View {
                             .background(Color.accentColor)
                             .foregroundColor(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
-                            
+                            .disabled(!registerVM.isFormValid)
                             
                             HStack {
                                 Button("Sign up with Google") {
@@ -58,15 +89,12 @@ struct RegisterView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                                 
                             }
-                            
-//                            NavigationLink("Already have an account?", destination: {
-//                                
-//                            })
-//                            .frame(maxWidth: .infinity, alignment: .leading)
-//                          
                         }
+                        
+                        
                         .padding()
                     }
+                    
                     
                     .frame(maxWidth: .infinity, alignment: .center)
                 }
