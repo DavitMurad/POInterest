@@ -7,6 +7,8 @@
 
 import Foundation
 import Combine
+import GoogleSignIn
+import GoogleSignInSwift
 
 class LoginViewModel: ObservableObject {
     @Published var email = ""
@@ -79,4 +81,24 @@ class LoginViewModel: ObservableObject {
        
        return hasUppercase && hasLowercase && hasNumber && hasSpecial
    }
+    
+    func signInGoogle() async throws {
+        guard let topVC = UIApplication.topViewController() else {
+            throw URLError(.cannotFindHost)
+        }
+        let gidSignInRes = try await GIDSignIn.sharedInstance.signIn(withPresenting: topVC)
+        
+        guard let idToken = gidSignInRes.user.idToken?.tokenString else {
+            throw URLError(.badServerResponse)
+        }
+        let accessToken = gidSignInRes.user.accessToken.tokenString
+        
+        let tokens = GoogleSignInResultModel(idToken: idToken, accessToken: accessToken)
+        try await AuthManager.shared.signInWithGoogle(token: tokens)
+    }
+    
+    func sendPasswordReset(email: String) async throws {
+        try await AuthManager.shared.sendPasswordReset(email: email)
+    }
+   
 }

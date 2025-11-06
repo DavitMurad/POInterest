@@ -12,7 +12,7 @@ struct PreARView: View {
 
     var body: some View {
         VStack {
-            Text("Hi \(AuthManager.shared.currentUser?.displayName ?? "no user")")
+            Text("Hi \(AuthManager.shared.currentUser?.displayName ?? "Explorer")")
                 .font(Font.title2)
             
             Button {

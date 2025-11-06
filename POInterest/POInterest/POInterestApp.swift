@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Firebase
+import GoogleSignIn
+
 
 @main
 struct POInterestApp: App {
@@ -28,6 +30,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
     FirebaseApp.configure()
+      
+      GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+             if let error = error {
+                 print("Error restoring sign-in: \(error.localizedDescription)")
+             }
+         }
+      
+     
       print("Firebase is set up")
     return true
   }

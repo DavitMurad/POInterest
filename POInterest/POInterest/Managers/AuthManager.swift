@@ -21,6 +21,11 @@ struct AuthDataResultModel {
     
 }
 
+struct GoogleSignInResultModel {
+    let idToken: String
+    let accessToken: String
+}
+
 final class AuthManager {
     static let shared = AuthManager()
     private init() {}
@@ -54,7 +59,29 @@ final class AuthManager {
         return AuthDataResultModel(user: authDataResult.user)
     }
     
+    @discardableResult
+    func signInWithGoogle(token: GoogleSignInResultModel) async throws -> AuthDataResultModel {
+        let credentials = GoogleAuthProvider.credential(withIDToken: token.idToken, accessToken: token.accessToken)
+        return try await signIn(credentials: credentials)
+    }
+    
+    func signIn(credentials: AuthCredential) async throws -> AuthDataResultModel {
+        let authDataResult = try await Auth.auth().signIn(with: credentials)
+        return AuthDataResultModel(user: authDataResult.user)
+    }
+    
+    func sendPasswordReset(email: String) async throws {
+        try await Auth.auth().sendPasswordReset(withEmail: email)
+    }
+    
     func signOut() throws {
         try Auth.auth().signOut()
+    }
+    
+    func deleteAcoount() async throws {
+        guard let user = Auth.auth().currentUser else {
+            throw URLError(.badURL)
+        }
+        try await user.delete()
     }
 }

@@ -11,7 +11,7 @@ extension TextField {
     func customTextFieldStyle() -> some View {
         return self
             .padding()
-            .background(Color.gray.opacity(0.2))
+            .background(Color.gray.opacity(0.9))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .font(.headline)
         
@@ -22,7 +22,7 @@ extension SecureField {
     func customTextFieldStyle() -> some View {
         return self
             .padding()
-            .background(Color.gray.opacity(0.2))
+            .background(Color.gray.opacity(0.9))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .font(.headline)
         

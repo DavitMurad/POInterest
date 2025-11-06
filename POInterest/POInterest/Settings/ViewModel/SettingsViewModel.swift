@@ -11,10 +11,15 @@ import Combine
 class SettingsViewModel: ObservableObject {
     
     @Published var hasSignedOut = false
-    
+    @Published var hasDeletedAcc = false
     func signOut() throws {
        try AuthManager.shared.signOut()
         hasSignedOut = true
+    }
+    
+    func deleteUser() async throws {
+        try await AuthManager.shared.deleteAcoount()
+        hasDeletedAcc = true
     }
     
 }

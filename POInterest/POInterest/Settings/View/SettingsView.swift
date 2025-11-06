@@ -12,6 +12,7 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section("Account") {
+                
                 Button("Log out") {
                     do {
                         try settingsVM.signOut()
@@ -23,11 +24,28 @@ struct SettingsView: View {
                 .navigationDestination(isPresented: $settingsVM.hasSignedOut) {
                     LoginView()
                 }
+                
+                Button("Delete account") {
+                    Task {
+                        do {
+                            try await settingsVM.deleteUser()
+                        } catch {
+                            print("Error deleting the account out: \(error)")
+                        }
+                    }
+                    
+                }
+                .foregroundStyle(.red)
+                .navigationDestination(isPresented: $settingsVM.hasDeletedAcc) {
+                    LoginView()
+                    
+                    
+                }
             }
         }
     }
 }
 
-#Preview {
-    SettingsView()
-}
+//#Preview {
+//    SettingsView()
+//}
