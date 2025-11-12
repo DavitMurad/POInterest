@@ -111,14 +111,30 @@ struct LoginView: View {
                                     //                                    .clipShape(RoundedRectangle(cornerRadius: 10))
                                     
                                     
-                                    Button("Sign in with Apple") {
-                                        
+                                    Button {
+                                        loginVM.formError = "Coming Soon!"
+                                    } label: {
+                                        HStack(spacing: 12) {
+                                                            Image(systemName: "apple.logo")
+                                                                .foregroundColor(.black)
+                                                                
+                                                            Text("Sign in")
+                                                                .foregroundColor(.gray)
+                                                                
+                                                                
+                                                        }
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .frame(height: 16)
+                                                        .padding(.vertical, 12)
+                                                        .padding(.leading)
+                                                        .background(Color.white)
+                                                        .cornerRadius(15)
+                                                        .overlay(
+                                                            RoundedRectangle(cornerRadius: 15)
+                                                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                                        )
                                     }
-                                    .frame(maxWidth: 200)
-                                    .frame(height: 55)
-                                    .background(Color.accentColor)
-                                    .foregroundColor(.white)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+
 
                                 }
                                 
@@ -130,18 +146,23 @@ struct LoginView: View {
                             }
                             .padding()
                         }
+                        .background(
+//                            LinearGradient(
+//                                gradient: Gradient(colors: [.black.opacity(0.2), .black.opacity(0.5)]),
+//                                startPoint: .top,
+//                                endPoint: .bottom
+//                            )
+                            .bar
+                            
+                            
+                          
+                    )
                         
                         
                         
                         .frame(maxWidth: .infinity, alignment: .center)
                     }
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [.black.opacity(0.2), .black.opacity(0.5)]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                )
+                
                 }
                 .alert("Reset Password", isPresented: $showingForgotPassword) {
                     TextField("Email", text: $resetEmail)

@@ -38,8 +38,6 @@ struct SettingsView: View {
                 .foregroundStyle(.red)
                 .navigationDestination(isPresented: $settingsVM.hasDeletedAcc) {
                     LoginView()
-                    
-                    
                 }
             }
         }
