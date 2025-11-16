@@ -37,6 +37,6 @@ struct CategoryFilterCell: View {
     }
 }
 
-#Preview {
-    CategoryFilterCell(title: "Restuarants", imageName: "fork.knife", isSelected: true, isDropDown: true)
-}
+//#Preview {
+//    CategoryFilterCell(title: "Restuarants", imageName: "fork.knife", isSelected: true, isDropDown: true)
+//}

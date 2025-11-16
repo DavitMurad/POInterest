@@ -40,7 +40,29 @@ class PlacesService {
             let distance = location.distance(from: itemLocation)
             guard distance <= radius else { return nil }
             
-            return PlaceModel(id: item.identifier?.rawValue ?? "2", name: item.name ?? "Place", description: item.description, address: "item.location.description ", imageName: nil, category: query, rating: nil, status: nil, reviews: [nil], phone: item.phoneNumber, coordinates: item.placemark.coordinate, distance: distance)
+            
+            let placemark = item.placemark
+            var addressComponents: [String] = []
+            
+            if let subThoroughfare = placemark.subThoroughfare {
+                addressComponents.append(subThoroughfare)
+            }
+            if let thoroughfare = placemark.thoroughfare {
+                addressComponents.append(thoroughfare)
+            }
+            if let locality = placemark.locality {
+                addressComponents.append(locality)
+            }
+            if let administrativeArea = placemark.administrativeArea {
+                addressComponents.append(administrativeArea)
+            }
+            if let postalCode = placemark.postalCode {
+                addressComponents.append(postalCode)
+            }
+            
+            let address = addressComponents.joined(separator: ", ")
+            
+            return PlaceModel(id: item.identifier?.rawValue, name: item.name, description: item.description, location: address, imageName: nil, category: query, rating: nil, status: nil, reviews: [nil], phone: item.phoneNumber, url: item.url?.absoluteString, coordinates: item.placemark.coordinate, distance: distance)
             
         }
     }

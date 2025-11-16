@@ -11,21 +11,21 @@ import CoreLocation
 
 //class ARViewModel: ObservableObject {
 //    @Published var places = [PlaceModel]()
-//    
+//
 //    let placesService = PlacesService()
 //    var locationManager = LocationManager()
-//    
+//
 //    var userCurrentLocation: CLLocation? {
 //        locationManager.currentLocation
 //    }
-//    
+//
 //    init() {
 //        getPlaces()
 //    }
-//    
+//
 //    func getPlaces() {
 //        places = placesService.fethNearbyPlaces(location: userCurrentLocation, radius: 500, query: .cafe)
-//        
+//
 //        print(places)
 //    }
 //}
@@ -42,12 +42,13 @@ class ARViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
+    @Published var categoryFilters = [CategoryFilterModel]()
+    
+    @Published var selectedFilterCategoy: String? = nil
     
     private let locationManager = LocationManager()
     private let placesService = PlacesService()
     private var cancellables = Set<AnyCancellable>()
-    
-    private let categoryFilterVM = CategoryFilterViewModel()
     
     var userLocation: CLLocation? {
         locationManager.currentLocation
@@ -58,9 +59,11 @@ class ARViewModel: ObservableObject {
     }
     
     init() {
+        getCategoryFilters()
+        
         print("PlacesViewModel initialized")
         locationManager.requestAuthorization()
-   
+        
         locationManager.$currentLocation
             .compactMap { $0 }
             .removeDuplicates { abs($0.coordinate.latitude - $1.coordinate.latitude) < 0.0001 }
@@ -89,10 +92,13 @@ class ARViewModel: ObservableObject {
         errorMessage = nil
         
         do {
-            let fetchedPlaces = try await placesService.fethNearbyPlaces(location: location, radius: 500, query: categoryFilterVM.selectedFilterCategoy ?? "cafe")
+            
+            guard let selectedFilterCategoy = selectedFilterCategoy else {return}
+            
+            let fetchedPlaces = try await placesService.fethNearbyPlaces(location: location, radius: 500, query: selectedFilterCategoy)
+            
             self.places = fetchedPlaces
             print("Successfully updated places array with \(fetchedPlaces.count) places")
-            print(places)
         } catch {
             print("Error fetching places: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
@@ -102,13 +108,19 @@ class ARViewModel: ObservableObject {
     }
     
     func manualRefresh() {
-        print("\n🔄 Manual refresh requested")
+        print("Manual refresh requested")
         guard let location = userLocation else {
             print("No location available yet")
             return
         }
         Task {
             await fetchPlaces(at: location)
+        }
+    }
+    
+    func getCategoryFilters() {
+        for placeCategory in PlaceCategoryEnum.allCases {
+            categoryFilters.append(CategoryFilterModel(title: placeCategory.rawValue, imageName: placeCategory.rawValue, isDropDown: false))
         }
     }
 }

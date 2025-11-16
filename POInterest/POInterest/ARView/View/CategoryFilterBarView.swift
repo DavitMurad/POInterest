@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct CategoryFilterBarView: View {
-    @StateObject var categoryFilterVM = CategoryFilterViewModel()
+//    @ObservedObject var categoryFilterVM: CategoryFilterViewModel
+    @ObservedObject var arVM: ARViewModel
     @State var selectedFilter: CategoryFilterModel? = nil
     @State var isFullScreenPresent = false
     @State var selectedCategory: PlaceCategoryEnum? = nil
@@ -35,7 +36,7 @@ struct CategoryFilterBarView: View {
                 }
                 
                 
-                ForEach($categoryFilterVM.categoryFilters, id: \.self) { $filter in
+                ForEach($arVM.categoryFilters, id: \.self) { $filter in
                     if selectedFilter == nil || selectedFilter?.title == filter.title {
                         CategoryFilterCell(
                             title: filter.title,
@@ -45,8 +46,11 @@ struct CategoryFilterBarView: View {
                         )
                         .background(.black.opacity(0.001))
                         .onTapGesture {
-                            categoryFilterVM.selectedFilterCategoy = selectedFilter?.title
                             selectedFilter = filter
+                            arVM.selectedFilterCategoy = selectedFilter?.title
+                            print(selectedFilter?.title)
+
+                            arVM.manualRefresh()
                         }
                         .padding(.leading, leadPadding(selectedFilter: selectedFilter, filter: filter))
                     }
@@ -59,7 +63,7 @@ struct CategoryFilterBarView: View {
     }
     
     func leadPadding(selectedFilter: CategoryFilterModel?, filter: CategoryFilterModel) -> CGFloat {
-        if selectedFilter == nil && filter.title == categoryFilterVM.categoryFilters.first?.title {
+        if selectedFilter == nil && filter.title == arVM.categoryFilters.first?.title {
             return 16
         }
         return 0

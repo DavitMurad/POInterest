@@ -11,7 +11,7 @@ struct UnitsView: View {
     @State var notificationsAreEnabled = true
     @State var unitType = "Metrics - m, km,"
     @State var selectedRadius = 50
-    let radiusOptions = [50, 100, 150]
+    let radiusOptions = [50, 100, 250, 500]
     var body: some View {
         VStack {
             Form {
@@ -50,7 +50,7 @@ struct UnitsView: View {
         
     }
 }
-
-#Preview {
-    UnitsView()
-}
+//
+//#Preview {
+//    UnitsView()
+//}

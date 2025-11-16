@@ -74,7 +74,7 @@ struct LoginView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .disabled(!loginVM.isFormValid)
                                 .navigationDestination(isPresented: $isLoggedIn) {
-                                    UnitsView()
+                                    RootView()
                                 }
                                 
                                 Button("Forgot Password?") {
@@ -99,43 +99,32 @@ struct LoginView: View {
                                             }
                                         }
                                     }
-                                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                                    
-                                    //                                    Button("Sign in with Google") {
-                                    //
-                                    //                                    }
-                                    //                                    .frame(maxWidth: 200)
-                                    //                                    .frame(height: 55)
-                                    //                                    .background(Color.accentColor)
-                                    //                                    .foregroundColor(.white)
-                                    //                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    
                                     
                                     Button {
                                         loginVM.formError = "Coming Soon!"
                                     } label: {
                                         HStack(spacing: 12) {
-                                                            Image(systemName: "apple.logo")
-                                                                .foregroundColor(.black)
-                                                                
-                                                            Text("Sign in")
-                                                                .foregroundColor(.gray)
-                                                                
-                                                                
-                                                        }
+                                            Image(systemName: "apple.logo")
+                                                .foregroundColor(.black)
+                                            
+                                            Text("Sign in")
+                                                .foregroundColor(.gray)
+                                            
+                                            
+                                        }
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .frame(height: 16)
-                                                        .padding(.vertical, 12)
-                                                        .padding(.leading)
-                                                        .background(Color.white)
-                                                        .cornerRadius(15)
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 15)
-                                                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                                        )
+                                        .padding(.vertical, 12)
+                                        .padding(.leading)
+                                        .background(Color.white)
+                                        .cornerRadius(15)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 15)
+                                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                        )
                                     }
-
-
+                                    
+                                    
                                 }
                                 
                                 NavigationLink("Don't have an account?", destination: {
@@ -147,22 +136,22 @@ struct LoginView: View {
                             .padding()
                         }
                         .background(
-//                            LinearGradient(
-//                                gradient: Gradient(colors: [.black.opacity(0.2), .black.opacity(0.5)]),
-//                                startPoint: .top,
-//                                endPoint: .bottom
-//                            )
+                            //                            LinearGradient(
+                            //                                gradient: Gradient(colors: [.black.opacity(0.2), .black.opacity(0.5)]),
+                            //                                startPoint: .top,
+                            //                                endPoint: .bottom
+                            //                            )
                             .bar
                             
                             
-                          
-                    )
+                            
+                        )
                         
                         
                         
                         .frame(maxWidth: .infinity, alignment: .center)
                     }
-                
+                    
                 }
                 .alert("Reset Password", isPresented: $showingForgotPassword) {
                     TextField("Email", text: $resetEmail)
@@ -190,13 +179,11 @@ struct LoginView: View {
                 } message: {
                     Text(resetStatusMessage ?? "")
                 }
-                    
-                }
+                
             }
-        .navigationBarBackButtonHidden()
-            
         }
-       
+        .navigationBarBackButtonHidden()
+    }
 }
 
 
