@@ -46,7 +46,7 @@ class ARViewModel: ObservableObject {
     
     @Published var selectedFilterCategoy: String? = nil
     
-    private let locationManager = LocationManager()
+    let locationManager = LocationManager()
     private let placesService = PlacesService()
     private var cancellables = Set<AnyCancellable>()
     
