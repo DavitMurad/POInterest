@@ -22,6 +22,37 @@ enum PlaceCategoryEnum: String, CaseIterable{
     case school
     case university
     case amusmentPark
+    
+    var iconName: (String, String) {
+        switch self {
+        case .restaurant:
+            return ("fork.knife", "Restuarant")
+        case .cafe:
+            return ("cup.and.saucer", "Café")
+        case .hotel:
+            return ("bed.double", "Hotel")
+        case .store:
+            return ("storefront", "Store")
+        case .bank:
+            return ("sterlingsign.bank.building", "Bank")
+        case .gasStaion:
+            return ("fuelpump", "Gas Station")
+        case .hostpial:
+            return ("cross.case", "Hospital")
+        case .parking:
+            return ("parkingsign", "Parking")
+        case .publicTransport:
+            return ("bus.fill", "Public Transport")
+        case .fitnessCenter:
+            return ("figure.run.treadmill", "Fitness Center")
+        case .school:
+            return ("backpack", "School")
+        case .university:
+            return ("graduationcap", "University")
+        case .amusmentPark:
+           return ("figure.2.and.child.holdinghands", "Amusement Park")
+        }
+    }
 }
 
 class PlacesService {

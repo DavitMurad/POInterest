@@ -23,15 +23,13 @@ struct PreARView: View {
                     .padding(.horizontal)
                     .background(.background)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .shadow(color: .black.opacity(0.3), radius: 5)
-                 
+                    .shadow(color: .primary.opacity(0.2), radius: 5)
             }
             
-
         }.navigationDestination(isPresented: $pressedStart) {
             ARView()
         }
-      
+        
     }
 }
 

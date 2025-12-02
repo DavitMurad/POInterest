@@ -14,7 +14,7 @@ struct CategoryFilterCell: View {
     var isDropDown: Bool
     var body: some View {
         HStack(spacing: 4) {
-            Image(systemName: "fork.knife")
+            Image(systemName: imageName)
                 .padding(.trailing, 5)
             Text(title)
             
@@ -27,7 +27,7 @@ struct CategoryFilterCell: View {
         .background(
             ZStack {
                 Capsule(style: .circular)
-                    .fill(.gray)
+                    .fill(.blue)
                     .opacity(isSelected ? 1 : 0)
                 Capsule(style: .circular)
                     .stroke(lineWidth: 1)

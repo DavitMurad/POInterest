@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct CategoryFilterBarView: View {
-//    @ObservedObject var categoryFilterVM: CategoryFilterViewModel
     @ObservedObject var arVM: ARViewModel
     @State var selectedFilter: CategoryFilterModel? = nil
     @State var isFullScreenPresent = false
     @State var selectedCategory: PlaceCategoryEnum? = nil
+    
     
     var onXPressed: (() -> Void)? = nil
     
@@ -21,20 +21,22 @@ struct CategoryFilterBarView: View {
             HStack {
                 if selectedFilter != nil {
                     Image(systemName: "xmark")
+                        .foregroundStyle(.red)
                         .padding(8)
                         .background(
                             Circle()
                                 .stroke(lineWidth: 1)
+                                .fill(.red)
                         )
                         .foregroundStyle(.gray)
                         .onTapGesture {
                             selectedFilter = nil
+                            arVM.manualRefresh()
                             onXPressed?()
                         }
                         .transition(AnyTransition.move(edge: .leading))
                         .padding(.leading, 16)
                 }
-                
                 
                 ForEach($arVM.categoryFilters, id: \.self) { $filter in
                     if selectedFilter == nil || selectedFilter?.title == filter.title {
@@ -49,8 +51,7 @@ struct CategoryFilterBarView: View {
                             selectedFilter = filter
                             arVM.selectedFilterCategoy = selectedFilter?.title
                             print(selectedFilter?.title)
-
-                            arVM.manualRefresh()
+                          
                         }
                         .padding(.leading, leadPadding(selectedFilter: selectedFilter, filter: filter))
                     }
@@ -59,7 +60,7 @@ struct CategoryFilterBarView: View {
         }
         .padding(.vertical, 4)
         .scrollIndicators(.hidden)
-        .animation(.bouncy, value: selectedFilter)
+        .animation(.easeInOut, value: selectedFilter)
     }
     
     func leadPadding(selectedFilter: CategoryFilterModel?, filter: CategoryFilterModel) -> CGFloat {

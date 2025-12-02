@@ -18,7 +18,7 @@ struct RootView: View {
                 }
                 
                 Tab("Saved Places", systemImage: "mappin.and.ellipse") {
-                    PreARView()
+                    SavedPlacesView()
                 }
                 
                 Tab("Settings", systemImage: "gear") {

@@ -120,7 +120,7 @@ class ARViewModel: ObservableObject {
     
     func getCategoryFilters() {
         for placeCategory in PlaceCategoryEnum.allCases {
-            categoryFilters.append(CategoryFilterModel(title: placeCategory.rawValue, imageName: placeCategory.rawValue, isDropDown: false))
+            categoryFilters.append(CategoryFilterModel(title: placeCategory.iconName.1, imageName: placeCategory.iconName.0, isDropDown: false))
         }
     }
 }

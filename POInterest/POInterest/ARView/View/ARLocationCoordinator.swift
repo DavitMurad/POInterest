@@ -26,8 +26,6 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         super.init()
         
         sceneView.delegate = self
-        
-        // Start timer for real-time updates every 5 seconds
         startUpdateTimer()
     }
     
@@ -37,7 +35,7 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
     
     func startUpdateTimer() {
         updateTimer?.invalidate()
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.updateAllLabels()
         }
     }
@@ -52,7 +50,6 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
                 labelNodes.removeValue(forKey: removedId)
             }
         }
-        
         self.places = newPlaces
         updateAllLabels()
     }
@@ -121,7 +118,7 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         // Create background plane
         let backgroundGeometry = SCNPlane(width: 2.5, height: 1.0)
         backgroundGeometry.cornerRadius = 0.1
-        backgroundGeometry.firstMaterial?.diffuse.contents = UIColor.systemBlue.withAlphaComponent(0.8)
+        backgroundGeometry.firstMaterial?.diffuse.contents = UIColor.black.withAlphaComponent(0.9)
         
         let backgroundNode = SCNNode(geometry: backgroundGeometry)
         backgroundNode.position = SCNVector3(0, 0, -0.05)
@@ -168,8 +165,8 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
     func calculateARPosition(bearing: Double, distance: Double) -> SCNVector3 {
         // Scale factor: real distance to AR space
         // For distances up to 500m, we map to max 20m in AR space
-        let maxARDistance: Float = 20.0
-        let maxRealDistance: Float = 500.0
+        let maxARDistance: Float = 20
+        let maxRealDistance: Float = 500
         let scaledDistance = min(Float(distance) / maxRealDistance * maxARDistance, maxARDistance)
         
         // Convert bearing to radians (bearing is clockwise from north)
@@ -197,7 +194,7 @@ extension CLLocation {
         let y = sin(dLon) * cos(lat2)
         let x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
         
-        var radiansBearing = atan2(y, x)
+        let radiansBearing = atan2(y, x)
         
         // Convert from radians to degrees
         var degreesBearing = radiansBearing.radiansToDegrees
