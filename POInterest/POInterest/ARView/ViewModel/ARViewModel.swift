@@ -94,7 +94,6 @@ class ARViewModel: ObservableObject {
         do {
             
             guard let selectedFilterCategoy = selectedFilterCategoy else {return}
-            
             let fetchedPlaces = try await placesService.fethNearbyPlaces(location: location, radius: 500, query: selectedFilterCategoy)
             
             self.places = fetchedPlaces
@@ -120,7 +119,11 @@ class ARViewModel: ObservableObject {
     
     func getCategoryFilters() {
         for placeCategory in PlaceCategoryEnum.allCases {
-            categoryFilters.append(CategoryFilterModel(title: placeCategory.iconName.1, imageName: placeCategory.iconName.0, isDropDown: false))
+            categoryFilters.append(CategoryFilterModel(title: placeCategory.iconName.1, imageName: placeCategory.iconName.0, isDropDown: false, categoryRawValue: placeCategory.rawValue))
         }
+    }
+    
+    func removePlaces() {
+        self.places = []
     }
 }

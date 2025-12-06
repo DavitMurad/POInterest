@@ -14,7 +14,7 @@ enum PlaceCategoryEnum: String, CaseIterable{
     case hotel
     case store
     case bank
-    case gasStaion
+    case gasStation
     case hostpial
     case parking
     case publicTransport
@@ -35,7 +35,7 @@ enum PlaceCategoryEnum: String, CaseIterable{
             return ("storefront", "Store")
         case .bank:
             return ("sterlingsign.bank.building", "Bank")
-        case .gasStaion:
+        case .gasStation:
             return ("fuelpump", "Gas Station")
         case .hostpial:
             return ("cross.case", "Hospital")
@@ -51,6 +51,37 @@ enum PlaceCategoryEnum: String, CaseIterable{
             return ("graduationcap", "University")
         case .amusmentPark:
            return ("figure.2.and.child.holdinghands", "Amusement Park")
+        }
+    }
+    
+    var imageName: String {
+        switch self {
+        case .restaurant:
+            return "POIRestaurant"
+        case .cafe:
+            return "POICafe"
+        case .hotel:
+            return "POIHotel"
+        case .store:
+            return "POIStore"
+        case .bank:
+            return "POIBank"
+        case .gasStation:
+            return "POIGas"
+        case .hostpial:
+            return "POIHospital"
+        case .parking:
+            return "POIParking"
+        case .publicTransport:
+            return "POIPublicTransport"
+        case .fitnessCenter:
+            return "POIFitness"
+        case .school:
+            return "POISchool"
+        case .university:
+            return "POIUni"
+        case .amusmentPark:
+            return "POIAmPark"
         }
     }
 }
@@ -92,9 +123,16 @@ class PlacesService {
             }
             
             let address = addressComponents.joined(separator: ", ")
+            let placesEnum = PlaceCategoryEnum(query: query.lowercased())
             
-            return PlaceModel(id: item.identifier?.rawValue, name: item.name, description: item.description, location: address, imageName: nil, category: query, rating: nil, status: nil, reviews: [nil], phone: item.phoneNumber, url: item.url?.absoluteString, coordinates: item.placemark.coordinate, distance: distance)
+            return PlaceModel(id: item.identifier?.rawValue, name: item.name, description: item.description, location: address, imageName: placesEnum?.imageName, category: query, rating: nil, status: nil, reviews: [nil], phone: item.phoneNumber, url: item.url?.absoluteString, coordinates: item.placemark.coordinate, distance: distance)
             
         }
+    }
+}
+
+extension PlaceCategoryEnum {
+    init?(query: String) {
+        self.init(rawValue: query.lowercased())
     }
 }

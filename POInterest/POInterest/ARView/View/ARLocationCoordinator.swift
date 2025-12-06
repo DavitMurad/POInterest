@@ -35,7 +35,7 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
     
     func startUpdateTimer() {
         updateTimer?.invalidate()
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             self?.updateAllLabels()
         }
     }

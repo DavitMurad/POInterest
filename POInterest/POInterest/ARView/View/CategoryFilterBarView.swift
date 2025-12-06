@@ -11,8 +11,7 @@ struct CategoryFilterBarView: View {
     @ObservedObject var arVM: ARViewModel
     @State var selectedFilter: CategoryFilterModel? = nil
     @State var isFullScreenPresent = false
-    @State var selectedCategory: PlaceCategoryEnum? = nil
-    
+
     
     var onXPressed: (() -> Void)? = nil
     
@@ -30,9 +29,10 @@ struct CategoryFilterBarView: View {
                         )
                         .foregroundStyle(.gray)
                         .onTapGesture {
-                            selectedFilter = nil
-                            arVM.manualRefresh()
                             onXPressed?()
+                            selectedFilter = nil
+                            arVM.removePlaces()
+                          
                         }
                         .transition(AnyTransition.move(edge: .leading))
                         .padding(.leading, 16)
@@ -48,8 +48,10 @@ struct CategoryFilterBarView: View {
                         )
                         .background(.black.opacity(0.001))
                         .onTapGesture {
+                            arVM.manualRefresh()
                             selectedFilter = filter
-                            arVM.selectedFilterCategoy = selectedFilter?.title
+                            arVM.selectedFilterCategoy = filter.categoryRawValue
+                            
                             print(selectedFilter?.title)
                           
                         }

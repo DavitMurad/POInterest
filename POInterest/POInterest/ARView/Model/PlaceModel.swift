@@ -13,7 +13,7 @@ struct PlaceModel: Identifiable  {
     let name: String?
     let description: String?
     let location: String?
-    let imageName: String?
+    var imageName: String?
     let category: String
     let rating: Double?
     let status: Bool?

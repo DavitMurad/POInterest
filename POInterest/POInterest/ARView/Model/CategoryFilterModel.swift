@@ -11,4 +11,5 @@ struct CategoryFilterModel: Equatable, Hashable {
     var title: String
     var imageName: String
     let isDropDown: Bool
+    let categoryRawValue: String
 }

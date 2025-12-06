@@ -10,7 +10,7 @@ import SwiftUI
 struct ARView: View {
     @StateObject var arVM = ARViewModel()
     @State private var showingList = false
-    
+    @State private var presentMessage = false
     var body: some View {
         ZStack {
             if let _ = arVM.userLocation {
@@ -19,24 +19,23 @@ struct ARView: View {
                     places: arVM.places
                 )
                 .edgesIgnoringSafeArea(.all)
+                
+                if arVM.places.isEmpty {
+                    OnBoardingMessageView()
+                }
             } else {
                 ZStack {
                     Color.black.edgesIgnoringSafeArea(.all)
                     VStack(spacing: 20) {
                         ProgressView()
                             .scaleEffect(1.5)
-                            .tint(.white)
                         Text("Waiting for location...")
-                            .foregroundColor(.white)
-                            .font(.headline)
                     }
                 }
             }
             
-            // Top overlay with category filter
             VStack {
                 CategoryFilterBarView(arVM: arVM)
-       
                     .padding()
                 
                 Spacer()
@@ -56,14 +55,16 @@ struct ARView: View {
                     
                     Spacer()
                     
-                    // Toggle list view button
                     Button(action: {
                         if !arVM.places.isEmpty {
-                            showingList.toggle()
+                            withAnimation(.easeInOut) {
+                                showingList.toggle()
+                            }
+                            
                         }
                         
                     }) {
-                        Image(systemName: showingList ? "camera.fill" : "list.bullet")
+                        Image(systemName: "list.bullet")
                             .font(.system(size: 20))
                             .foregroundColor(.white)
                             .frame(width: 50, height: 50)
@@ -74,64 +75,89 @@ struct ARView: View {
                 }
                 .padding()
                 
-                if showingList {
-                    Color.black.opacity(0.3)
-                        .edgesIgnoringSafeArea(.all)
-                        .onTapGesture {
-                            showingList = false
-                        }
+                .sheet(isPresented: $showingList) {
+                    PlacesListView()
+                        .environmentObject(arVM)
                     
-                    VStack(spacing: 0) {
-                        // Header
-                        HStack {
-                            Text("Nearby Places")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                            Spacer()
-                            Button(action: { showingList = false }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 24))
-                                    .foregroundColor(.white)
-                            }
-                        }
-                        .padding()
-                        .background(Color.blue)
-                    }
-                    .sheet(isPresented: $showingList) {
-                        List {
-                            ForEach(arVM.places) { place in
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        Text(place.name ?? "Unknown")
-                                            .font(.headline)
-                                        Text(place.location ?? "Unknown")
-                                            .font(.caption)
-                                        
-                                    }
-                                    Spacer()
-                                    Text("\(place.distance, specifier: "%.1f") m")
-                                        .font(.caption)
-                                }
-                                .padding(.horizontal)
-                                
-                                
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
                 }
                 
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .onAppear {
-                arVM.startTracking()
+        }
+        .onAppear {
+            presentMessage = true
+            arVM.startTracking()
+        }
+        .onDisappear {
+            arVM.stopTracking()
+        }
+        .onChange(of: arVM.selectedFilterCategoy) { oldValue, newValue in
+            print("Filter changed, refreshing places")
+            arVM.manualRefresh()
+        }
+    }
+    
+}
+
+
+
+struct PlacesListView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var arVM: ARViewModel
+    var body: some View {
+        NavigationView {
+            VStack(alignment: .leading) {
+                
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .foregroundStyle(.secondary)
+                        .padding(8)
+                        .background(
+                            Circle()
+                                .stroke(lineWidth: 1)
+                                .fill(.secondary)
+                        )
+                        .foregroundStyle(.gray)
+                }
+                .padding()
+                
+                
+                List {
+                    ForEach(arVM.places) { place in
+                        NavigationLink(destination: DetailView(place: place)) {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(place.name ?? "Unknown")
+                                        .font(.headline)
+                                    Text(place.location ?? "Unknown")
+                                        .font(.caption)
+                                }
+                                Spacer()
+                                Text("\(place.distance, specifier: "%.1f") m")
+                                    .font(.caption)
+                            }
+                            
+                        }
+                    }
+                }
+                .listStyle(.plain)
             }
-            .onDisappear {
-                arVM.stopTracking()
-            }
-            .onChange(of: arVM.selectedFilterCategoy) { oldValue, newValue in
-                print("Filter changed, refreshing places")
-                arVM.manualRefresh()
-            }
+        }
+     
+    }
+    
+}
+
+struct OnBoardingMessageView: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 15)
+                .fill(.black.opacity(0.7))
+                .frame(width: 300, height: 100)
+            
+            Text("Please select a category to start")
         }
     }
 }
