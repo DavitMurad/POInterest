@@ -67,9 +67,7 @@ final class RegisterViewModel: ObservableObject {
             return
             
         }
-        
         formError = nil
-        
         do {
             let returnedUser = try await AuthManager.shared.createUser(
                 email: email,

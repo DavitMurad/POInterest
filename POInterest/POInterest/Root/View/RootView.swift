@@ -10,6 +10,7 @@ import SwiftUI
 struct RootView: View {
     
     let userName = AuthManager.shared.userName
+    @StateObject var savedPlacesVM = SavedPlacesViewModel()
     var body: some View {
         NavigationStack {
             TabView {
@@ -19,6 +20,7 @@ struct RootView: View {
                 
                 Tab("Saved Places", systemImage: "mappin.and.ellipse") {
                     SavedPlacesView()
+                        .environmentObject(savedPlacesVM)
                 }
                 
                 Tab("Settings", systemImage: "gear") {

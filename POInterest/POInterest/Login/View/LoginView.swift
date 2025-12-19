@@ -88,7 +88,6 @@ struct LoginView: View {
                                     .frame(height: 20)
                                 
                                 HStack {
-                                    
                                     GoogleSignInButton() {
                                         Task {
                                             do {

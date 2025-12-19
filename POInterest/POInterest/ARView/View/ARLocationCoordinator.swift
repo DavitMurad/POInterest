@@ -59,12 +59,10 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         let heading = locationManager.heading
         
         for place in places {
-            guard let placeId = place.id else { continue }
+            let placeId = place.id
             
-            let poiLocation = CLLocation(
-                latitude: place.coordinates.latitude,
-                longitude: place.coordinates.longitude
-            )
+            let coord = CLLocation(latitude: place.coordinates.lat, longitude: place.coordinates.long)
+            let poiLocation = coord
             
             let distance = userLocation.distance(from: poiLocation)
             let bearing = userLocation.bearing(to: poiLocation)
@@ -85,7 +83,7 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
     }
     
     func createARLabel(for place: PlaceModel, bearing: Double, distance: Double) {
-        guard let placeId = place.id else { return }
+        let placeId = place.id
         
         // Create parent node
         let parentNode = SCNNode()
@@ -123,17 +121,8 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         let backgroundNode = SCNNode(geometry: backgroundGeometry)
         backgroundNode.position = SCNVector3(0, 0, -0.05)
         
-        // Create marker sphere
-//        let markerGeometry = SCNSphere(radius: 0.15)
-//        markerGeometry.firstMaterial?.diffuse.contents = UIColor.systemRed
-        
-//        let markerNode = SCNNode(geometry: markerGeometry)
-//        markerNode.position = SCNVector3(0, 0.7, 0)
-        
-        // Add all to parent
         parentNode.addChildNode(backgroundNode)
         parentNode.addChildNode(textNode)
-//        parentNode.addChildNode(markerNode)
         
         // Make label face camera
         let constraint = SCNBillboardConstraint()
@@ -145,8 +134,8 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
     }
     
     func updateARLabel(for place: PlaceModel, bearing: Double, distance: Double) {
-        guard let placeId = place.id,
-              let parentNode = labelNodes[placeId] else { return }
+        let placeId = place.id
+        guard let parentNode = labelNodes[placeId] else { return }
         
         let position = calculateARPosition(bearing: bearing, distance: distance)
         parentNode.position = position
@@ -179,6 +168,7 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         
         return SCNVector3(x, y, z)
     }
+    
 }
 
 

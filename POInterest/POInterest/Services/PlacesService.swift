@@ -18,10 +18,10 @@ enum PlaceCategoryEnum: String, CaseIterable{
     case hostpial
     case parking
     case publicTransport
-    case fitnessCenter
+    case fitness
     case school
     case university
-    case amusmentPark
+    case park
     
     var iconName: (String, String) {
         switch self {
@@ -43,13 +43,13 @@ enum PlaceCategoryEnum: String, CaseIterable{
             return ("parkingsign", "Parking")
         case .publicTransport:
             return ("bus.fill", "Public Transport")
-        case .fitnessCenter:
+        case .fitness:
             return ("figure.run.treadmill", "Fitness Center")
         case .school:
             return ("backpack", "School")
         case .university:
             return ("graduationcap", "University")
-        case .amusmentPark:
+        case .park:
            return ("figure.2.and.child.holdinghands", "Amusement Park")
         }
     }
@@ -74,13 +74,13 @@ enum PlaceCategoryEnum: String, CaseIterable{
             return "POIParking"
         case .publicTransport:
             return "POIPublicTransport"
-        case .fitnessCenter:
+        case .fitness:
             return "POIFitness"
         case .school:
             return "POISchool"
         case .university:
             return "POIUni"
-        case .amusmentPark:
+        case .park:
             return "POIAmPark"
         }
     }
@@ -124,8 +124,7 @@ class PlacesService {
             
             let address = addressComponents.joined(separator: ", ")
             let placesEnum = PlaceCategoryEnum(query: query.lowercased())
-            
-            return PlaceModel(id: item.identifier?.rawValue, name: item.name, description: item.description, location: address, imageName: placesEnum?.imageName, category: query, rating: nil, status: nil, reviews: [nil], phone: item.phoneNumber, url: item.url?.absoluteString, coordinates: item.placemark.coordinate, distance: distance)
+            return PlaceModel(id: item.identifier?.rawValue ?? "1", name: item.name, location: address, imageName: placesEnum?.imageName, iconName: placesEnum?.iconName.0 ?? "fork.knife", category: query, phone: item.phoneNumber, url: item.url?.absoluteString, coordinates: Coordinates(lat: item.placemark.coordinate.latitude, long: item.placemark.coordinate.longitude), distance: distance, isSaved: false)
             
         }
     }

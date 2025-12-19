@@ -8,21 +8,28 @@
 import Foundation
 import CoreLocation
 
-struct PlaceModel: Identifiable  {
-    let id: String?
+struct PlaceModel: Identifiable, Codable, Equatable  {
+   
+    let id: String
     let name: String?
-    let description: String?
     let location: String?
     var imageName: String?
+    var iconName: String
     let category: String
-    let rating: Double?
-    let status: Bool?
-    let reviews: [String?]
     let phone: String?
     let url: String?
-    let coordinates: CLLocationCoordinate2D
+    let coordinates: Coordinates
     let distance: Double
+    var isSaved: Bool
     
+    static func == (lhs: PlaceModel, rhs: PlaceModel) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+struct Coordinates: Codable {
+    let lat: Double
+    let long: Double
 }
 
 

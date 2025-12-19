@@ -50,6 +50,8 @@ final class AuthManager {
         
         try await changeRequest.commitChanges()
         try await authDataResult.user.reload()
+        let authDataResultModel = AuthDataResultModel(user: authDataResult.user)
+        try await DatabaseManager.shared.createORUpdateDBUser(user: DBUser(uid: authDataResultModel.uid, email:  authDataResultModel.email, name:  authDataResultModel.name, savedPlaces: []))
         return AuthDataResultModel(user: authDataResult.user)
         
     }
@@ -67,7 +69,9 @@ final class AuthManager {
     
     func signIn(credentials: AuthCredential) async throws -> AuthDataResultModel {
         let authDataResult = try await Auth.auth().signIn(with: credentials)
-        return AuthDataResultModel(user: authDataResult.user)
+        let authDataResultModel = AuthDataResultModel(user: authDataResult.user)
+        try await DatabaseManager.shared.createORUpdateDBUser(user: DBUser(uid: authDataResultModel.uid, email:  authDataResultModel.email, name:  authDataResultModel.name, savedPlaces: []))
+        return authDataResultModel
     }
     
     func sendPasswordReset(email: String) async throws {

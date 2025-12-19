@@ -9,33 +9,7 @@ import Foundation
 import Combine
 import CoreLocation
 
-//class ARViewModel: ObservableObject {
-//    @Published var places = [PlaceModel]()
-//
-//    let placesService = PlacesService()
-//    var locationManager = LocationManager()
-//
-//    var userCurrentLocation: CLLocation? {
-//        locationManager.currentLocation
-//    }
-//
-//    init() {
-//        getPlaces()
-//    }
-//
-//    func getPlaces() {
-//        places = placesService.fethNearbyPlaces(location: userCurrentLocation, radius: 500, query: .cafe)
-//
-//        print(places)
-//    }
-//}
 
-//
-//  ARViewModel.swift
-//  POInterest
-//
-//  Created by Davit Muradyan on 09.11.25.
-//
 @MainActor
 class ARViewModel: ObservableObject {
     @Published var places: [PlaceModel] = []
@@ -94,7 +68,7 @@ class ARViewModel: ObservableObject {
         do {
             
             guard let selectedFilterCategoy = selectedFilterCategoy else {return}
-            let fetchedPlaces = try await placesService.fethNearbyPlaces(location: location, radius: 500, query: selectedFilterCategoy)
+            let fetchedPlaces = try await placesService.fethNearbyPlaces(location: location, radius: MetricManager.shared.defaultMeter.rawValue, query: selectedFilterCategoy)
             
             self.places = fetchedPlaces
             print("Successfully updated places array with \(fetchedPlaces.count) places")

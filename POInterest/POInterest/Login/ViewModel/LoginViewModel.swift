@@ -92,7 +92,6 @@ class LoginViewModel: ObservableObject {
             throw URLError(.badServerResponse)
         }
         let accessToken = gidSignInRes.user.accessToken.tokenString
-        
         let tokens = GoogleSignInResultModel(idToken: idToken, accessToken: accessToken)
         try await AuthManager.shared.signInWithGoogle(token: tokens)
     }

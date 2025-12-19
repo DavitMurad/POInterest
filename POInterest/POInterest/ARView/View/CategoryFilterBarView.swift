@@ -11,7 +11,6 @@ struct CategoryFilterBarView: View {
     @ObservedObject var arVM: ARViewModel
     @State var selectedFilter: CategoryFilterModel? = nil
     @State var isFullScreenPresent = false
-
     
     var onXPressed: (() -> Void)? = nil
     
@@ -32,6 +31,7 @@ struct CategoryFilterBarView: View {
                             onXPressed?()
                             selectedFilter = nil
                             arVM.removePlaces()
+                            arVM.selectedFilterCategoy = nil
                           
                         }
                         .transition(AnyTransition.move(edge: .leading))
@@ -51,8 +51,6 @@ struct CategoryFilterBarView: View {
                             arVM.manualRefresh()
                             selectedFilter = filter
                             arVM.selectedFilterCategoy = filter.categoryRawValue
-                            
-                            print(selectedFilter?.title)
                           
                         }
                         .padding(.leading, leadPadding(selectedFilter: selectedFilter, filter: filter))

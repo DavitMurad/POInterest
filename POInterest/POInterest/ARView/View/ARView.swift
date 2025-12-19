@@ -20,8 +20,11 @@ struct ARView: View {
                 )
                 .edgesIgnoringSafeArea(.all)
                 
-                if arVM.places.isEmpty {
-                    OnBoardingMessageView()
+                if arVM.selectedFilterCategoy != nil && arVM.places.isEmpty {
+                    OnBoardingMessageView(message: "Nothing has been found within")
+                } else if arVM.places.isEmpty {
+                    OnBoardingMessageView(message: "Please select a category to start within")
+                    
                 }
             } else {
                 ZStack {
@@ -125,8 +128,8 @@ struct PlacesListView: View {
                 
                 
                 List {
-                    ForEach(arVM.places) { place in
-                        NavigationLink(destination: DetailView(place: place)) {
+                    ForEach($arVM.places) { $place in
+                        NavigationLink(destination: DetailView(place: $place)) {
                             HStack {
                                 VStack(alignment: .leading) {
                                     Text(place.name ?? "Unknown")
@@ -145,22 +148,42 @@ struct PlacesListView: View {
                 .listStyle(.plain)
             }
         }
-     
+        
     }
     
 }
 
 struct OnBoardingMessageView: View {
+    @State var message: String
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 15)
                 .fill(.black.opacity(0.7))
-                .frame(width: 300, height: 100)
             
-            Text("Please select a category to start")
+            Text("\(message) \(MetricManager.shared.searchRadius, specifier: "%.0f") m")
+                .multilineTextAlignment(.center)
+                .padding()
         }
+        .frame(width: 300, height: 100)
+        
     }
 }
+//Please select a category to start within
+
+//struct EmptyMessageView: View {
+//    var body: some View {
+//        ZStack {
+//            RoundedRectangle(cornerRadius: 15)
+//                .fill(.black.opacity(0.7))
+//
+//            Text("Nothing has been found within \(MetricManager.shared.searchRadius, specifier: "%.0f") m")
+//                .multilineTextAlignment(.center)
+//                .padding()
+//        }
+//        .frame(width: 300, height: 100)
+//
+//    }
+//}
 
 //#Preview {
 //    ARView()
