@@ -45,6 +45,20 @@ class DatabaseManager {
     }
     
     
+    func isPlaceSaved(uid: String, place: PlaceModel) async throws -> Bool {
+        let snapshot = try await Firestore.firestore()
+            .collection("users")
+            .document(uid)
+            .getDocument()
+        
+        let user = try snapshot.data(as: DBUser.self)
+        if user.savedPlaces.contains(where: {$0.id == place.id}) {
+            return true
+        }
+        return false
+    }
+    
+    
     func savePlace(uid: String, place: PlaceModel) async throws {
     
         let snapshot = try await Firestore.firestore()
@@ -74,6 +88,5 @@ class DatabaseManager {
 
        try await createORUpdateDBUser(user: user)
     }
-    
 }
 

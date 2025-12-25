@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 import CoreLocation
-
+import SwiftUI
 
 @MainActor
 class ARViewModel: ObservableObject {
@@ -19,6 +19,7 @@ class ARViewModel: ObservableObject {
     @Published var categoryFilters = [CategoryFilterModel]()
     
     @Published var selectedFilterCategoy: String? = nil
+    var savedPlacesVM = SavedPlacesViewModel()
     
     let locationManager = LocationManager()
     private let placesService = PlacesService()
@@ -54,6 +55,9 @@ class ARViewModel: ObservableObject {
     func startTracking() {
         print("Starting location tracking...")
         locationManager.startUpdating()
+        Task {
+            await savedPlacesVM.getSavedPlaces()
+        }
     }
     
     func stopTracking() {
@@ -68,7 +72,8 @@ class ARViewModel: ObservableObject {
         do {
             
             guard let selectedFilterCategoy = selectedFilterCategoy else {return}
-            let fetchedPlaces = try await placesService.fethNearbyPlaces(location: location, radius: MetricManager.shared.defaultMeter.rawValue, query: selectedFilterCategoy)
+            let savedPlaces = savedPlacesVM.savedPlaces
+            let fetchedPlaces = try await placesService.fethNearbyPlaces(location: location, radius: MetricManager.shared.defaultMeter.rawValue, query: selectedFilterCategoy, savedPlaces: savedPlaces)
             
             self.places = fetchedPlaces
             print("Successfully updated places array with \(fetchedPlaces.count) places")
@@ -100,4 +105,8 @@ class ARViewModel: ObservableObject {
     func removePlaces() {
         self.places = []
     }
+    
+    func setSavedPlacesViewModel(_ viewModel: SavedPlacesViewModel) {
+            self.savedPlacesVM = viewModel
+        }
 }

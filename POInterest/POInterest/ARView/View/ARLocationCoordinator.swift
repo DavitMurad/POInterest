@@ -18,6 +18,7 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
     var places: [PlaceModel]
     var labelNodes: [String: SCNNode] = [:]
     var updateTimer: Timer?
+    var onPlaceTapped: ((PlaceModel) -> Void)?
     
     init(sceneView: ARSCNView, locationManager: LocationManager, places: [PlaceModel]) {
         self.sceneView = sceneView
@@ -27,6 +28,7 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         
         sceneView.delegate = self
         startUpdateTimer()
+        setupTapGesture()
     }
     
     deinit {
@@ -154,8 +156,8 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
     func calculateARPosition(bearing: Double, distance: Double) -> SCNVector3 {
         // Scale factor: real distance to AR space
         // For distances up to 500m, we map to max 20m in AR space
-        let maxARDistance: Float = 20
-        let maxRealDistance: Float = 500
+        let maxARDistance: Float = MetricManager.shared.searchRadius < 100.0 ? Float(MetricManager.shared.searchRadius) / 10.0 : Float(MetricManager.shared.searchRadius) / 25.0
+        let maxRealDistance = Float(MetricManager.shared.searchRadius)
         let scaledDistance = min(Float(distance) / maxRealDistance * maxARDistance, maxARDistance)
         
         // Convert bearing to radians (bearing is clockwise from north)
@@ -168,6 +170,28 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         
         return SCNVector3(x, y, z)
     }
+    
+    func setupTapGesture() {
+         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+         sceneView.addGestureRecognizer(tapGesture)
+     }
+    
+    @objc func handleTap(_ gesture: UITapGestureRecognizer) {
+           let location = gesture.location(in: sceneView)
+           let hitResults = sceneView.hitTest(location, options: [:])
+           
+           if let hitNode = hitResults.first?.node {
+               var currentNode: SCNNode? = hitNode
+               while currentNode != nil {
+                   if let placeId = labelNodes.first(where: { $0.value == currentNode })?.key,
+                      let place = places.first(where: { $0.id == placeId }) {
+                       onPlaceTapped?(place)
+                       return
+                   }
+                   currentNode = currentNode?.parent
+               }
+           }
+       }
     
 }
 

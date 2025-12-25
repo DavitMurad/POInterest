@@ -12,6 +12,7 @@ struct DetailView: View {
     @Binding var place: PlaceModel
     @State var mapRegion = MapCameraPosition.automatic
     @StateObject var detailVM = DetailViewModel()
+    @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
     var body: some View {
         ScrollView {
             VStack {
@@ -21,8 +22,6 @@ struct DetailView: View {
                         .scaledToFill()
                         .frame(height: 300)
                         .frame(maxWidth: .infinity)
-                    
-                    
                     VStack {
                         Button {
                             openMaps()
@@ -39,14 +38,13 @@ struct DetailView: View {
                             withAnimation {
                                 if place.isSaved {
                                     Task {
-                                        await detailVM.removePlace(place: place)
+                                        await savedPlacesVM.removePlace(place: place)
                                     }
                                 } else {
                                     Task {
-                                        await detailVM.savePlace(place: place)
+                                        await savedPlacesVM.savePlace(place: place)
                                     }
                                 }
-
                                 place.isSaved.toggle()
                             }
                         } label: {
@@ -54,14 +52,14 @@ struct DetailView: View {
                                 place.isSaved ? "Unsave" : "Save",
                                 systemImage: place.isSaved ? "bookmark.slash" : "bookmark"
                             )
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.thinMaterial))
                         }
-
                     }
-                    
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                    
                     .padding()
-                    
                 }
                 .ignoresSafeArea()
                 
@@ -69,12 +67,12 @@ struct DetailView: View {
                     HStack {
                         Label(place.name ?? "Unknown", systemImage: place.iconName)
                             .font(.title)
-                        
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.7)
                         Spacer()
                         Text("\(place.distance, specifier: "%.1f") m")
                             .font(.title2)
                     }
-                    
                     Text(place.location ?? "Unknown")
                         .font(.caption)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -82,7 +80,6 @@ struct DetailView: View {
                     
                 }
                 .padding()
-                
                 
                 Map(position: $mapRegion) {
                     Annotation(place.name ?? "Unknown", coordinate: CLLocationCoordinate2D(latitude: place.coordinates.lat, longitude: place.coordinates.long) ) {
@@ -95,7 +92,6 @@ struct DetailView: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 300)
             }
-            
         }
         .onAppear {
             let coordinate = place.coordinates
@@ -104,6 +100,11 @@ struct DetailView: View {
                 span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02))
             
             self.mapRegion = MapCameraPosition.region(region)
+            
+            Task {
+                await savedPlacesVM.getSavedPlaces()
+                
+            }
         }
     }
     
@@ -126,7 +127,7 @@ struct DetailView: View {
     }
     
     func openBasicMapItem() {
-        let placeMark = MKPlacemark(coordinate: CLLocationCoordinate2D(latitude:  place.coordinates.lat, longitude:  place.coordinates.long))
+        let placeMark = MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: place.coordinates.lat, longitude:  place.coordinates.long))
         let mapItem = MKMapItem(placemark: placeMark)
         mapItem.name = place.name
         mapItem.openInMaps(launchOptions: nil)
@@ -161,7 +162,6 @@ struct AdditionalDataView: View {
                             .multilineTextAlignment(.leading)
                             .lineLimit(2)
                     }
-                    
                 }
             }
         }

@@ -88,7 +88,7 @@ enum PlaceCategoryEnum: String, CaseIterable{
 
 class PlacesService {
     
-    func fethNearbyPlaces(location: CLLocation, radius: Double, query: String) async throws -> [PlaceModel] {
+    func fethNearbyPlaces(location: CLLocation, radius: Double, query: String, savedPlaces: [PlaceModel] = []) async throws -> [PlaceModel] {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = query
         request.region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
@@ -124,8 +124,10 @@ class PlacesService {
             
             let address = addressComponents.joined(separator: ", ")
             let placesEnum = PlaceCategoryEnum(query: query.lowercased())
-            return PlaceModel(id: item.identifier?.rawValue ?? "1", name: item.name, location: address, imageName: placesEnum?.imageName, iconName: placesEnum?.iconName.0 ?? "fork.knife", category: query, phone: item.phoneNumber, url: item.url?.absoluteString, coordinates: Coordinates(lat: item.placemark.coordinate.latitude, long: item.placemark.coordinate.longitude), distance: distance, isSaved: false)
+            let placeId = item.identifier?.rawValue ?? "\(item.placemark.coordinate.latitude)_\(item.placemark.coordinate.longitude)"
+            let isSaved = savedPlaces.contains { $0.id == placeId }
             
+            return PlaceModel(id: item.identifier?.rawValue ?? "1", name: item.name, location: address, imageName: placesEnum?.imageName, iconName: placesEnum?.iconName.0 ?? "fork.knife", category: query, phone: item.phoneNumber, url: item.url?.absoluteString, coordinates: Coordinates(lat: item.placemark.coordinate.latitude, long: item.placemark.coordinate.longitude), distance: distance, isSaved: isSaved)
         }
     }
 }

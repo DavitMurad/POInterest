@@ -11,13 +11,15 @@ struct ARView: View {
     @StateObject var arVM = ARViewModel()
     @State private var showingList = false
     @State private var presentMessage = false
+    @StateObject var savedPlacesVM = SavedPlacesViewModel()
+    @State private var selectedPlace: PlaceModel?
     var body: some View {
         ZStack {
             if let _ = arVM.userLocation {
                 ARSceneViewContainer(
                     locationManager: arVM.locationManager,
-                    places: arVM.places
-                )
+                    places: arVM.places, selectedPlace: $selectedPlace)
+                
                 .edgesIgnoringSafeArea(.all)
                 
                 if arVM.selectedFilterCategoy != nil && arVM.places.isEmpty {
@@ -87,8 +89,15 @@ struct ARView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .sheet(item: $selectedPlace) { place in
+            if let index = arVM.places.firstIndex(where: { $0.id == place.id }) {
+                DetailView(place: $arVM.places[index])
+                    .environmentObject(savedPlacesVM)
+            }
+        }
         .onAppear {
             presentMessage = true
+            arVM.setSavedPlacesViewModel(savedPlacesVM)
             arVM.startTracking()
         }
         .onDisappear {
@@ -102,11 +111,11 @@ struct ARView: View {
     
 }
 
-
-
 struct PlacesListView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var arVM: ARViewModel
+    @StateObject var savedPlacesVM = SavedPlacesViewModel()
+    
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
@@ -125,15 +134,23 @@ struct PlacesListView: View {
                         .foregroundStyle(.gray)
                 }
                 .padding()
-                
-                
                 List {
                     ForEach($arVM.places) { $place in
-                        NavigationLink(destination: DetailView(place: $place)) {
+                        NavigationLink(destination: DetailView(place: $place).environmentObject(savedPlacesVM)) {
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text(place.name ?? "Unknown")
+                                    if place.isSaved {
+                                        HStack {
+                                            Text(place.name ?? "Unknown")
+                                            Image(systemName: "bookmark")
+                                        }
                                         .font(.headline)
+                                        .foregroundStyle(.primary)
+                                    } else {
+                                        Text(place.name ?? "Unknown")
+                                            .font(.headline)
+                                    }
+                                    
                                     Text(place.location ?? "Unknown")
                                         .font(.caption)
                                 }
@@ -150,7 +167,6 @@ struct PlacesListView: View {
         }
         
     }
-    
 }
 
 struct OnBoardingMessageView: View {
@@ -168,23 +184,3 @@ struct OnBoardingMessageView: View {
         
     }
 }
-//Please select a category to start within
-
-//struct EmptyMessageView: View {
-//    var body: some View {
-//        ZStack {
-//            RoundedRectangle(cornerRadius: 15)
-//                .fill(.black.opacity(0.7))
-//
-//            Text("Nothing has been found within \(MetricManager.shared.searchRadius, specifier: "%.0f") m")
-//                .multilineTextAlignment(.center)
-//                .padding()
-//        }
-//        .frame(width: 300, height: 100)
-//
-//    }
-//}
-
-//#Preview {
-//    ARView()
-//}

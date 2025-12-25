@@ -15,16 +15,25 @@ import Combine
 struct ARSceneViewContainer: UIViewRepresentable {
     var locationManager: LocationManager
     var places: [PlaceModel]
+    @Binding var selectedPlace: PlaceModel?
     
     func makeCoordinator() -> ARLocationCoordinator {
         let sceneView = ARSCNView(frame: .zero)
-        return ARLocationCoordinator(sceneView: sceneView, locationManager: locationManager, places: places)
+        let coordinator = ARLocationCoordinator(sceneView: sceneView, locationManager: locationManager, places: places)
+        
+        coordinator.onPlaceTapped = { place in
+            selectedPlace = place
+        }
+        
+        return coordinator
+        
+        
     }
     
     func makeUIView(context: Context) -> ARSCNView {
         let sceneView = context.coordinator.sceneView
         
-      
+        
         let configuration = ARWorldTrackingConfiguration()
         configuration.worldAlignment = .gravityAndHeading
         configuration.planeDetection = []
@@ -38,6 +47,9 @@ struct ARSceneViewContainer: UIViewRepresentable {
     
     func updateUIView(_ uiView: ARSCNView, context: Context) {
         context.coordinator.updatePlaces(places)
+        context.coordinator.onPlaceTapped = { place in
+                   selectedPlace = place
+               }
     }
     
     static func dismantleUIView(_ uiView: ARSCNView, coordinator: ARLocationCoordinator) {
