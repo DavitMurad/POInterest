@@ -10,15 +10,14 @@ import SwiftUI
 struct SavedPlacesView: View {
     @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
     @State var selectedPlace: PlaceModel?
-
+    
     var body: some View {
         ScrollView {
             if !savedPlacesVM.hasFetchedPlaces {
                 ProgressView("Fetching Saved Places...")
                     .font(.headline)
                     .frame(maxHeight: .infinity, alignment: .center)
-            }
-            else if savedPlacesVM.savedPlaces.isEmpty {
+            } else if savedPlacesVM.savedPlaces.isEmpty {
                 ContentUnavailableView("Nothing has been saved yet", systemImage: "bookmark.slash").font(.headline)
             } else {
                 VStack(spacing: 15) {
@@ -52,12 +51,21 @@ struct SavedPlacesView: View {
                                 .fill(.black.opacity(0.5))
                                 
                                 .overlay(alignment: .topLeading) {
-                                    Text(place.name ?? "Place")
-                                        .font(.headline)
-                                        .foregroundStyle(.white)
-                                        .padding()
+                                    HStack {
+                                        Text(place.name ?? "Place")
+                                            .font(.headline)
+                                            .foregroundStyle(.white)
+                                            .padding()
+                                        
+                                        Spacer()
+                                        
+                                        Circle()
+                                            .fill(place.distance <= MetricManager.shared.searchRadius ? .green : .red)
+                                            .frame(width: 12, height: 12)
+                                            .padding(.horizontal)
+                                        
+                                    }
                                 }
-                                
                                 UnevenRoundedRectangle(
                                     topLeadingRadius: 0,
                                     bottomLeadingRadius: 5,
@@ -81,21 +89,22 @@ struct SavedPlacesView: View {
                                         Button("See More") {
                                             selectedPlace = place
                                         }
-                                            .font(.caption)
+                                        .font(.caption)
                                     }
                                     .padding(.horizontal, 15)
                                 }
                                 .shadow(color: .secondary.opacity(0.3), radius: 10)
-
+                                
                             }
                             .onTapGesture {
-                               selectedPlace = place
+                                selectedPlace = place
                             }
                         }
                     }
                     .sheet(item: $selectedPlace) { place in
                         if let index = savedPlacesVM.savedPlaces.firstIndex(where: { $0.id == place.id }) {
                             DetailView(place: $savedPlacesVM.savedPlaces[index])
+                                .presentationDragIndicator(.visible)
                         }
                     }
                 }

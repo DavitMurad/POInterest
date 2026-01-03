@@ -88,5 +88,15 @@ class DatabaseManager {
 
        try await createORUpdateDBUser(user: user)
     }
+    
+    func deleteUser(uid: String) async throws {
+        try await Firestore.firestore()
+            .collection("users")
+            .document(uid)
+            .delete()
+        
+        print("Successfully deleted user data")
+    }
+    
 }
 

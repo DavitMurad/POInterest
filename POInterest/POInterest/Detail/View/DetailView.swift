@@ -33,6 +33,7 @@ struct DetailView: View {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(.thinMaterial)
                         )
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                         Spacer()
                         Button {
                             withAnimation {
@@ -52,13 +53,17 @@ struct DetailView: View {
                                 place.isSaved ? "Unsave" : "Save",
                                 systemImage: place.isSaved ? "bookmark.slash" : "bookmark"
                             )
-                            .padding(12)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.thinMaterial))
                         }
+                        .padding(12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.thinMaterial)
+                        )
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                  
+
                     }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+            
                     .padding()
                 }
                 .ignoresSafeArea()

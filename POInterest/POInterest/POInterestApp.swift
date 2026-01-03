@@ -13,13 +13,16 @@ import GoogleSignIn
 @main
 struct POInterestApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var authStateManager = AuthStateManager()
     
     var body: some Scene {
         WindowGroup {
-            if let _ = AuthManager.shared.currentUser {
+            if authStateManager.isAuthenticated {
                 RootView()
+                    .environmentObject(authStateManager)
             } else {
                 LoginView()
+                    .environmentObject(authStateManager)
             }
         }
     }
@@ -27,18 +30,16 @@ struct POInterestApp: App {
 
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-  func application(_ application: UIApplication,
-                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    FirebaseApp.configure()
-      
-      GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
-             if let error = error {
-                 print("Error restoring sign-in: \(error.localizedDescription)")
-             }
-         }
-      
-     
-      print("Firebase is set up")
-    return true
-  }
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        
+        GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+            if let error = error {
+                print("Error restoring sign-in: \(error.localizedDescription)")
+            }
+        }
+        print("Firebase is set up")
+        return true
+    }
 }

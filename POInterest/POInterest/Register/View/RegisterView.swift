@@ -82,12 +82,21 @@ struct RegisterView: View {
                             .background(Color.accentColor)
                             .foregroundColor(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .disabled(!registerVM.isFormValid)
+                            .disabled(!registerVM.isFormValid || registerVM.isLoading)
                             .navigationDestination(isPresented: $isRegistered) {
                                 UnitsView()
                             }
                             
                             .padding(20)
+                            .disabled(registerVM.isLoading)
+                            
+                            if registerVM.isLoading {
+                                
+                                ProgressView("Please wait…")
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                                
+                            }
+                            
                         }
                         .background(
                             LinearGradient(

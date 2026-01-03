@@ -46,11 +46,11 @@ struct LoginView: View {
                                 }
                                 SecureField("Password", text: $loginVM.password)
                                     .customTextFieldStyle()
-                                if let error = loginVM.passwordErrorMessage {
-                                    Text(error)
-                                        .font(.caption)
-                                        .foregroundStyle(.red)
-                                }
+//                                if let error = loginVM.passwordErrorMessage {
+//                                    Text(error)
+//                                        .font(.caption)
+//                                        .foregroundStyle(.red)
+//                                }
                                 if let error = loginVM.formError {
                                     Text(error)
                                         .font(.subheadline)

@@ -22,6 +22,8 @@ final class RegisterViewModel: ObservableObject {
 
     @Published var isRegisterSuccess = false
     
+    @Published var isLoading = false
+    
     private var cancellables = Set<AnyCancellable>()
     
     
@@ -67,7 +69,9 @@ final class RegisterViewModel: ObservableObject {
             return
             
         }
+        
         formError = nil
+        isLoading = true
         do {
             let returnedUser = try await AuthManager.shared.createUser(
                 email: email,
@@ -75,6 +79,7 @@ final class RegisterViewModel: ObservableObject {
                 name: name
             )
             isRegisterSuccess = true
+       
             print("Registration successful for UID: \(returnedUser.uid), Name: \(returnedUser.name ?? "N/A")")
         } catch {
             formError = "This email is already registered."

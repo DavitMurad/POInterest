@@ -115,8 +115,15 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         textNode.pivot = SCNMatrix4MakeTranslation(dx, dy, 0)
         textNode.scale = SCNVector3(0.01, 0.01, 0.01)
         
-        // Create background plane
-        let backgroundGeometry = SCNPlane(width: 2.5, height: 1.0)
+        // Add bookmark icon if place is saved
+        if place.isSaved {
+            let bookmarkNode = createBookmarkIcon()
+            bookmarkNode.position = SCNVector3(0.9, 0.2, 0)
+            parentNode.addChildNode(bookmarkNode)
+        }
+        
+        let backgroundWidth: CGFloat = place.isSaved ? 3.0 : 2.5
+        let backgroundGeometry = SCNPlane(width: backgroundWidth, height: 1.0)
         backgroundGeometry.cornerRadius = 0.1
         backgroundGeometry.firstMaterial?.diffuse.contents = UIColor.black.withAlphaComponent(0.9)
         
@@ -126,13 +133,28 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         parentNode.addChildNode(backgroundNode)
         parentNode.addChildNode(textNode)
         
-        // Make label face camera
         let constraint = SCNBillboardConstraint()
         constraint.freeAxes = [.Y]
         parentNode.constraints = [constraint]
         
         sceneView.scene.rootNode.addChildNode(parentNode)
         labelNodes[placeId] = parentNode
+    }
+
+    func createBookmarkIcon() -> SCNNode {
+        let config = UIImage.SymbolConfiguration(pointSize: 50, weight: .semibold)
+        guard let bookmarkImage = UIImage(systemName: "bookmark.fill", withConfiguration: config)?
+            .withTintColor(.white, renderingMode: .alwaysOriginal) else {
+            return SCNNode()
+        }
+
+        let iconPlane = SCNPlane(width: 0.3, height: 0.3)
+        iconPlane.firstMaterial?.diffuse.contents = bookmarkImage
+        
+        iconPlane.firstMaterial?.lightingModel = .constant
+        
+        let iconNode = SCNNode(geometry: iconPlane)
+        return iconNode
     }
     
     func updateARLabel(for place: PlaceModel, bearing: Double, distance: Double) {

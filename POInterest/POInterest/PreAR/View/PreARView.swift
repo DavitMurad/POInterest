@@ -27,7 +27,7 @@ struct PreARView: View {
             }
             
         }.navigationDestination(isPresented: $pressedStart) {
-            ARView()
+            ARView().toolbarVisibility(.hidden, for: .tabBar)
         }
         
     }

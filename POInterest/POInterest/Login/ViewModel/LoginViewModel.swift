@@ -58,11 +58,10 @@ class LoginViewModel: ObservableObject {
         
         do {
             let user = try await AuthManager.shared.loginUser(email: email, password: password)
-            print("Logged in \(user.email)")
             isLoginSuccess = true
         } catch (let error) {
             print(error.localizedDescription)
-            formError = "Email is not in our system. Please try again."
+            formError = "Email or password is incorrect"
         }
     }
     

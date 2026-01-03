@@ -82,10 +82,13 @@ final class AuthManager {
         try Auth.auth().signOut()
     }
     
-    func deleteAcoount() async throws {
+    func deleteAccount() async throws {
         guard let user = Auth.auth().currentUser else {
-            throw URLError(.badURL)
+            throw URLError(.userAuthenticationRequired)
         }
+        try await DatabaseManager.shared.deleteUser(uid: user.uid)
+
         try await user.delete()
     }
+
 }
