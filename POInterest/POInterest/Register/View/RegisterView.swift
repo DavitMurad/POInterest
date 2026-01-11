@@ -91,7 +91,6 @@ struct RegisterView: View {
                             .disabled(registerVM.isLoading)
                             
                             if registerVM.isLoading {
-                                
                                 ProgressView("Please wait…")
                                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                                 

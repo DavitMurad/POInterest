@@ -15,34 +15,39 @@ class SavedPlacesViewModel: ObservableObject {
     @Published var hasFetchedPlaces = false
     
     func getSavedPlaces() async {
-        do {
-            guard let user = AuthManager.shared.currentUser else { return }
-            let retrivedPlaces = try await DatabaseManager.shared.getUser(uid:  user.uid).savedPlaces
-            if !savedPlaces.contains(where: {$0 == retrivedPlaces[0]}) {
-                savedPlaces.append(contentsOf: retrivedPlaces)
-                hasFetchedPlaces = true
-                
-            }
-           
-        }  catch(let error) {
-            hasFetchedPlaces = false
-        }
-       
-    }
+          do {
+              guard let user = AuthManager.shared.currentUser else { return }
+              let retrievedPlaces = try await DatabaseManager.shared.getUser(uid: user.uid).savedPlaces
+              
+              await MainActor.run {
+                  self.savedPlaces = retrievedPlaces
+                  self.hasFetchedPlaces = true
+              }
+          } catch {
+              await MainActor.run {
+                  self.hasFetchedPlaces = true
+                  print("Error fetching saved places: \(error)")
+              }
+          }
+      }
     
     func savePlace(place: PlaceModel) async {
-        do {
-            try await DatabaseManager.shared.savePlace(uid: AuthManager.shared.currentUser?.uid ?? "12345", place: place)
-        } catch (let error) {
-            print("Error saving place: \(error)")
-        }
-    }
-    
-    func removePlace(place: PlaceModel) async {
-        do {
-            try await DatabaseManager.shared.removePlace(uid: AuthManager.shared.currentUser?.uid ?? "12345", place: place)
-        } catch (let error) {
-            print("Error removing place: \(error)")
-        }
-    }
+           do {
+               guard let uid = AuthManager.shared.currentUser?.uid else { return }
+               try await DatabaseManager.shared.savePlace(uid: uid, place: place)
+               await getSavedPlaces()
+           } catch {
+               print("Error saving place: \(error)")
+           }
+       }
+       
+       func removePlace(place: PlaceModel) async {
+           do {
+               guard let uid = AuthManager.shared.currentUser?.uid else { return }
+               try await DatabaseManager.shared.removePlace(uid: uid, place: place)
+               await getSavedPlaces()
+           } catch {
+               print("Error removing place: \(error)")
+           }
+       }
 }

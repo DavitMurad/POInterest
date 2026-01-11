@@ -9,6 +9,7 @@ import SwiftUI
 import FirebaseAuth
 
 struct PreARView: View {
+    @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
     @State var pressedStart = false
     var body: some View {
         VStack {
@@ -28,6 +29,7 @@ struct PreARView: View {
             
         }.navigationDestination(isPresented: $pressedStart) {
             ARView().toolbarVisibility(.hidden, for: .tabBar)
+                .environmentObject(savedPlacesVM)
         }
         
     }

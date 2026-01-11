@@ -13,6 +13,8 @@ struct DetailView: View {
     @State var mapRegion = MapCameraPosition.automatic
     @StateObject var detailVM = DetailViewModel()
     @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         ScrollView {
             VStack {
@@ -40,12 +42,14 @@ struct DetailView: View {
                                 if place.isSaved {
                                     Task {
                                         await savedPlacesVM.removePlace(place: place)
+                                        dismiss()
                                     }
                                 } else {
                                     Task {
                                         await savedPlacesVM.savePlace(place: place)
                                     }
                                 }
+                                
                                 place.isSaved.toggle()
                             }
                         } label: {

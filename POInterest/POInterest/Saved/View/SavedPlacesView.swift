@@ -116,11 +116,11 @@ struct SavedPlacesView: View {
                 await savedPlacesVM.getSavedPlaces()
             }
         }
-        .onChange(of: savedPlacesVM.savedPlaces) { oldValue, newValue in
-            Task {
-                await savedPlacesVM.getSavedPlaces()
-            }
-            
-        }
+//        .onChange(of: savedPlacesVM.savedPlaces) { oldValue, newValue in
+//            Task {
+//                await savedPlacesVM.getSavedPlaces()
+//            }
+//            
+//        }
     }
 }

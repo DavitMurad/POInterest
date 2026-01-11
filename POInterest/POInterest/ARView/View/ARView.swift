@@ -11,7 +11,7 @@ struct ARView: View {
     @StateObject var arVM = ARViewModel()
     @State private var showingList = false
     @State private var presentMessage = false
-    @StateObject var savedPlacesVM = SavedPlacesViewModel()
+    @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
     @State private var selectedPlace: PlaceModel?
     var body: some View {
         ZStack {
@@ -114,7 +114,7 @@ struct ARView: View {
 struct PlacesListView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var arVM: ARViewModel
-    @StateObject var savedPlacesVM = SavedPlacesViewModel()
+    @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
     
     var body: some View {
         NavigationView {
