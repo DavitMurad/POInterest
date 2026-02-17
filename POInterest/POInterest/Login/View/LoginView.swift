@@ -21,57 +21,86 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("StreetView")
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                // Light gradient background
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(.systemBackground),
+                        Color(.systemGray6)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack {
-                        Text("Welcome to POInterest")
-                            .font(.title2)
-                        Text("Please log in below")
-                            .font(.title2)
+                    VStack(spacing: 32) {
+                        // Header
+                        VStack(spacing: 8) {
+                            Text("Welcome to POInterest")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                            
+                            Text("Discover nearby places")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.top, 60)
                         
-                        ZStack {
-                            VStack(spacing: 15) {
-                                TextField("Email", text: $loginVM.email)
-                                    .customTextFieldStyle()
-                                    .keyboardType(.emailAddress)
-                                if let error = loginVM.emailErrorMessage {
-                                    Text(error)
-                                        .font(.caption)
-                                        .foregroundStyle(.red)
+                    
+                        VStack(spacing: 20) {
+                            VStack(spacing: 16) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    TextField("Email", text: $loginVM.email)
+                                        .textContentType(.emailAddress)
+                                        .keyboardType(.emailAddress)
+                                        .autocapitalization(.none)
+                                        .padding()
+                                        .background(Color(.systemGray6))
+                                        .cornerRadius(12)
+                                    
+                                    if let error = loginVM.emailErrorMessage {
+                                        Text(error)
+                                            .font(.caption)
+                                            .foregroundStyle(.red)
+                                    }
                                 }
-                                SecureField("Password", text: $loginVM.password)
-                                    .customTextFieldStyle()
-//                                if let error = loginVM.passwordErrorMessage {
-//                                    Text(error)
-//                                        .font(.caption)
-//                                        .foregroundStyle(.red)
-//                                }
+                                
+                                VStack(alignment: .leading, spacing: 6) {
+                                    SecureField("Password", text: $loginVM.password)
+                                        .textContentType(.password)
+                                        .padding()
+                                        .background(Color(.systemGray6))
+                                        .cornerRadius(12)
+                                }
+                                
                                 if let error = loginVM.formError {
                                     Text(error)
                                         .font(.subheadline)
-                                        .fontWeight(.bold)
+                                        .fontWeight(.medium)
                                         .foregroundColor(.red)
                                         .multilineTextAlignment(.center)
+                                        .padding(.vertical, 4)
                                 }
                                 
-                                Button("Log in") {
+                                Button {
                                     Task {
                                         await loginVM.login()
                                         if loginVM.isLoginSuccess {
                                             isLoggedIn = true
                                         }
                                     }
+                                } label: {
+                                    Text("Log in")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(
+                                            Color.accentColor
+                                                .opacity(loginVM.isFormValid ? 1.0 : 0.5)
+                                        )
+                                        .cornerRadius(12)
                                 }
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 55)
-                                .background(Color.accentColor)
-                                .foregroundColor(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .disabled(!loginVM.isFormValid)
                                 .navigationDestination(isPresented: $isLoggedIn) {
                                     RootView()
@@ -80,80 +109,88 @@ struct LoginView: View {
                                 Button("Forgot Password?") {
                                     showingForgotPassword = true
                                 }
-                                .foregroundColor(.white)
+                                .font(.subheadline)
+                                .foregroundColor(.accentColor)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
-                                .padding(.top, 4)
-                                
-                                ORSeperator()
-                                    .frame(height: 20)
-                                
-                                HStack {
-                                    GoogleSignInButton() {
-                                        Task {
-                                            do {
-                                                try await loginVM.signInGoogle()
-                                                isLoggedIn = true
-                                            } catch {
-                                                loginVM.formError = "Google sign-in failed. Please try again"
-                                            }
-                                        }
-                                    }
-                                    
-                                    Button {
-                                        loginVM.formError = "Coming Soon!"
-                                    } label: {
-                                        HStack(spacing: 12) {
-                                            Image(systemName: "apple.logo")
-                                                .foregroundColor(.black)
-                                            
-                                            Text("Sign in")
-                                                .foregroundColor(.gray)
-                                            
-                                            
-                                        }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .frame(height: 16)
-                                        .padding(.vertical, 12)
-                                        .padding(.leading)
-                                        .background(Color.white)
-                                        .cornerRadius(15)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 15)
-                                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                        )
-                                    }
-                                    
-                                    
-                                }
-                                
-                                NavigationLink("Don't have an account?", destination: {
-                                    RegisterView()
-                                })
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                
                             }
-                            .padding()
+                            
+                            
+                            HStack(spacing: 16) {
+                                Rectangle()
+                                    .frame(height: 1)
+                                    .foregroundColor(.gray.opacity(0.3))
+                                
+                                Text("or")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                
+                                Rectangle()
+                                    .frame(height: 1)
+                                    .foregroundColor(.gray.opacity(0.3))
+                            }
+                            .padding(.vertical, 8)
+                            
+                        
+                            VStack(spacing: 12) {
+                                GoogleSignInButton {
+                                    Task {
+                                        do {
+                                            try await loginVM.signInGoogle()
+                                            isLoggedIn = true
+                                        } catch {
+                                            loginVM.formError = "Google sign-in failed. Please try again"
+                                        }
+                                    }
+                                }
+                                .frame(height: 50)
+                                .cornerRadius(12)
+                                
+                                Button {
+                                    loginVM.formError = "Coming Soon!"
+                                } label: {
+                                    HStack(spacing: 12) {
+                                        Image(systemName: "apple.logo")
+                                            .font(.title3)
+                                        
+                                        Text("Sign in with Apple")
+                                            .font(.headline)
+                                    }
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(12)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                                    )
+                                }
+                            }
+                            
+                            HStack(spacing: 4) {
+                                Text("Don't have an account?")
+                                    .foregroundColor(.secondary)
+                                
+                                NavigationLink("Sign up") {
+                                    RegisterView()
+                                }
+                                .fontWeight(.semibold)
+                            }
+                            .font(.subheadline)
+                            .padding(.top, 8)
                         }
-                        .background(
-                            //                            LinearGradient(
-                            //                                gradient: Gradient(colors: [.black.opacity(0.2), .black.opacity(0.5)]),
-                            //                                startPoint: .top,
-                            //                                endPoint: .bottom
-                            //                            )
-                            .bar
-                            
-                            
-                            
-                        )
-                        
-                        
-                        
-                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(24)
+                        .background(.thinMaterial)
+                        .cornerRadius(20)
+                        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+                        .padding(.horizontal, 24)
                     }
-                    
                 }
+                
                 .alert("Reset Password", isPresented: $showingForgotPassword) {
                     TextField("Email", text: $resetEmail)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
                     Button("Send Reset Link") {
                         Task {
                             do {
@@ -178,7 +215,6 @@ struct LoginView: View {
                 } message: {
                     Text(resetStatusMessage ?? "")
                 }
-                
             }
         }
         .navigationBarBackButtonHidden()

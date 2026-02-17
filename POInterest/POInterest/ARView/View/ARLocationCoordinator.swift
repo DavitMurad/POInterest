@@ -29,10 +29,17 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         sceneView.delegate = self
         startUpdateTimer()
         setupTapGesture()
+        setupAccessibility()
     }
     
     deinit {
         updateTimer?.invalidate()
+    }
+    
+    func setupAccessibility() {
+        sceneView.isAccessibilityElement = false
+        sceneView.accessibilityLabel = "AR Scene View"
+        sceneView.accessibilityHint = "Shows nearby places in augmented reality"
     }
     
     func startUpdateTimer() {
@@ -137,8 +144,87 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         constraint.freeAxes = [.Y]
         parentNode.constraints = [constraint]
         
+        // Add accessibility to the parent node
+        configureAccessibility(for: parentNode, place: place, distance: distance, bearing: bearing)
+        
         sceneView.scene.rootNode.addChildNode(parentNode)
         labelNodes[placeId] = parentNode
+    }
+    
+    func configureAccessibility(for node: SCNNode, place: PlaceModel, distance: Double, bearing: Double) {
+        node.isAccessibilityElement = true
+        
+        // Create descriptive label
+        let placeName = place.name ?? "Unknown place"
+        let distanceText = String(format: "%.0f meters away", distance)
+        let directionText = getDirectionDescription(from: bearing)
+        let savedStatus = place.isSaved ? ", saved" : ""
+        
+        node.accessibilityLabel = "\(placeName), \(distanceText), \(directionText)\(savedStatus)"
+        
+        // Add hint for interaction
+        node.accessibilityHint = "To open details, use the list view button at the bottom of the screen."
+        // Set traits
+        var traits: UIAccessibilityTraits = [.button]
+        if place.isSaved {
+            traits.insert(.startsMediaSession) // Use this to indicate special status
+        }
+        node.accessibilityTraits = traits
+        
+        // Add custom actions for additional functionality
+        let detailAction = UIAccessibilityCustomAction(
+            name: "View details",
+            target: self,
+            selector: #selector(accessibilityShowDetails(_:))
+        )
+        node.accessibilityCustomActions = [detailAction]
+        
+        // Store place reference for action handling using the node's name property
+        node.name = place.id
+    }
+    
+    @objc func accessibilityShowDetails(_ action: UIAccessibilityCustomAction) -> Bool {
+        guard let node = action.target as? SCNNode,
+              let placeId = node.name,
+              let place = places.first(where: { $0.id == placeId }) else {
+            return false
+        }
+        
+        onPlaceTapped?(place)
+        return true
+    }
+    
+    func getDirectionDescription(from bearing: Double) -> String {
+        // Normalize bearing to 0-360
+        var normalizedBearing = bearing
+        while normalizedBearing < 0 {
+            normalizedBearing += 360
+        }
+        while normalizedBearing >= 360 {
+            normalizedBearing -= 360
+        }
+        
+        // Convert to cardinal direction
+        switch normalizedBearing {
+        case 0..<22.5, 337.5...360:
+            return "directly ahead"
+        case 22.5..<67.5:
+            return "ahead and to the right"
+        case 67.5..<112.5:
+            return "to your right"
+        case 112.5..<157.5:
+            return "behind and to the right"
+        case 157.5..<202.5:
+            return "behind you"
+        case 202.5..<247.5:
+            return "behind and to the left"
+        case 247.5..<292.5:
+            return "to your left"
+        case 292.5..<337.5:
+            return "ahead and to the left"
+        default:
+            return "nearby"
+        }
     }
 
     func createBookmarkIcon() -> SCNNode {
@@ -154,6 +240,10 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         iconPlane.firstMaterial?.lightingModel = .constant
         
         let iconNode = SCNNode(geometry: iconPlane)
+        
+        // Make icon node not an accessibility element (parent handles it)
+        iconNode.isAccessibilityElement = false
+        
         return iconNode
     }
     
@@ -173,6 +263,9 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
                 textGeometry.string = text
             }
         }
+        
+        // Update accessibility info
+        configureAccessibility(for: parentNode, place: place, distance: distance, bearing: bearing)
     }
     
     func calculateARPosition(bearing: Double, distance: Double) -> SCNVector3 {

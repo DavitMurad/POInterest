@@ -13,6 +13,7 @@ struct DetailView: View {
     @State var mapRegion = MapCameraPosition.automatic
     @StateObject var detailVM = DetailViewModel()
     @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
+    @EnvironmentObject var locationManager: LocationManager // Add this
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -105,16 +106,27 @@ struct DetailView: View {
         .onAppear {
             let coordinate = place.coordinates
             let region = MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: coordinate.lat, longitude: coordinate.long) ,
+                center: CLLocationCoordinate2D(latitude: coordinate.lat, longitude: coordinate.long),
                 span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02))
             
             self.mapRegion = MapCameraPosition.region(region)
             
             Task {
                 await savedPlacesVM.getSavedPlaces()
-                
+                updateDistance()
             }
         }
+    }
+    
+    private func updateDistance() {
+        guard let userLocation = locationManager.currentLocation else { return }
+        
+        let placeLocation = CLLocation(
+            latitude: place.coordinates.lat,
+            longitude: place.coordinates.long
+        )
+        
+        place.distance = userLocation.distance(from: placeLocation)
     }
     
     func openMaps() {
@@ -178,21 +190,3 @@ struct AdditionalDataView: View {
     }
     
 }
-
-
-//#Preview {
-//    let cafe = PlaceModel(
-//        id: "cafe_001",
-//        name: "The London Brew House",
-//        description: "A cozy independent coffee shop serving artisan coffee and homemade pastries.",
-//        location: "12 Borough High Street, London SE1 1XX, United Kingdom",
-//        imageName: "POICafe",
-//        iconName: "fork.and.knife", category: "Cafe",
-//        phone: "+44 20 7946 1234",
-//        url: "https://www.thelondonbrewhouse.co.uk",
-//        coordinates: CLLocationCoordinate2D(latitude: 51.5055, longitude: -0.0922),
-//        distance: 80
-//    )
-//
-//    DetailView(place: cafe)
-//}

@@ -19,7 +19,7 @@ struct PlaceModel: Identifiable, Codable, Equatable  {
     let phone: String?
     let url: String?
     let coordinates: Coordinates
-    let distance: Double
+    var distance: Double
     var isSaved: Bool
     
     static func == (lhs: PlaceModel, rhs: PlaceModel) -> Bool {

@@ -12,26 +12,36 @@ struct PreARView: View {
     @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
     @State var pressedStart = false
     var body: some View {
-        VStack {
-            Text("Hi \(AuthManager.shared.currentUser?.displayName ?? "Explorer")")
-                .font(Font.title2)
-            
-            Button {
-                pressedStart = true
-            } label: {
-                Label("Start AR Experience", systemImage: "camera.viewfinder")
-                    .frame(height: 50)
-                    .padding(.horizontal)
-                    .background(.background)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .shadow(color: .primary.opacity(0.2), radius: 5)
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(.systemBackground),
+                    Color(.systemGray6)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            VStack {
+                Text("Hi \(AuthManager.shared.currentUser?.displayName ?? "Explorer")")
+                    .font(Font.title2)
+                
+                Button {
+                    pressedStart = true
+                } label: {
+                    Label("Start AR Experience", systemImage: "camera.viewfinder")
+                        .frame(height: 50)
+                        .padding(.horizontal)
+                        .background(.background)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .shadow(color: .primary.opacity(0.2), radius: 5)
+                }
+                
+            }.navigationDestination(isPresented: $pressedStart) {
+                ARView().toolbarVisibility(.hidden, for: .tabBar)
+                    .environmentObject(savedPlacesVM)
             }
-            
-        }.navigationDestination(isPresented: $pressedStart) {
-            ARView().toolbarVisibility(.hidden, for: .tabBar)
-                .environmentObject(savedPlacesVM)
         }
-        
     }
 }
 
