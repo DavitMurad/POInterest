@@ -10,6 +10,7 @@ import SwiftUI
 struct SavedPlacesView: View {
     @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
     @State var selectedPlace: PlaceModel?
+    @EnvironmentObject var locationManager: LocationManager
     
     var body: some View {
         ZStack {
@@ -108,6 +109,7 @@ struct SavedPlacesView: View {
                         .sheet(item: $selectedPlace) { place in
                             if let index = savedPlacesVM.savedPlaces.firstIndex(where: { $0.id == place.id }) {
                                 DetailView(place: $savedPlacesVM.savedPlaces[index])
+                                    .environmentObject(locationManager)
                                     .presentationDragIndicator(.visible)
                             }
                         }

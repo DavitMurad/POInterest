@@ -46,7 +46,6 @@ struct SettingsView: View {
                     .foregroundStyle(.red)
                 }
                 .disabled(settingsVM.isLoading)
-                //            .blur(radius: settingsVM.isLoading ? 2 : 0)
                 
                 if settingsVM.isLoading {
                     

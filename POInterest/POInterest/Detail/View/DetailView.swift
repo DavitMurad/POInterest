@@ -13,7 +13,7 @@ struct DetailView: View {
     @State var mapRegion = MapCameraPosition.automatic
     @StateObject var detailVM = DetailViewModel()
     @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
-    @EnvironmentObject var locationManager: LocationManager // Add this
+    @EnvironmentObject var locationManager: LocationManager
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

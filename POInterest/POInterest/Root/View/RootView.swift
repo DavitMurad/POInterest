@@ -19,6 +19,7 @@ struct RootView: View {
                 PreARView()
                     .navigationTitle("Explore")
                     .environmentObject(savedPlacesVM)
+                    .environmentObject(locationManager)
             }
             .tabItem {
                 Label("Explore", systemImage: "camera.viewfinder")

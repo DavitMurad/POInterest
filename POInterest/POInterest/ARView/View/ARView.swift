@@ -12,6 +12,7 @@ struct ARView: View {
     @State private var showingList = false
     @State private var presentMessage = false
     @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
+    @EnvironmentObject var locationManager: LocationManager
     @State private var selectedPlace: PlaceModel?
     var body: some View {
         ZStack {
@@ -81,8 +82,9 @@ struct ARView: View {
                 .padding()
                 
                 .sheet(isPresented: $showingList) {
-                    PlacesListView()
+                    PlacesListView(selectedPlace: $selectedPlace)
                         .environmentObject(arVM)
+                        .environmentObject(locationManager)
                     
                 }
                 
@@ -93,6 +95,8 @@ struct ARView: View {
             if let index = arVM.places.firstIndex(where: { $0.id == place.id }) {
                 DetailView(place: $arVM.places[index])
                     .environmentObject(savedPlacesVM)
+                    .environmentObject(locationManager)
+
             }
         }
         .onAppear {
@@ -115,7 +119,10 @@ struct PlacesListView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var arVM: ARViewModel
     @EnvironmentObject var savedPlacesVM: SavedPlacesViewModel
-    
+    @EnvironmentObject var locationManager: LocationManager
+    @State var openDetail = false
+    @Binding var selectedPlace: PlaceModel?
+
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
@@ -136,36 +143,44 @@ struct PlacesListView: View {
                 .padding()
                 List {
                     ForEach($arVM.places) { $place in
-                        NavigationLink(destination: DetailView(place: $place).environmentObject(savedPlacesVM)) {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    if place.isSaved {
-                                        HStack {
-                                            Text(place.name ?? "Unknown")
-                                            Image(systemName: "bookmark")
-                                        }
-                                        .font(.headline)
-                                        .foregroundStyle(.primary)
-                                    } else {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                if place.isSaved {
+                                    HStack {
                                         Text(place.name ?? "Unknown")
-                                            .font(.headline)
+                                        Image(systemName: "bookmark")
                                     }
-                                    
-                                    Text(place.location ?? "Unknown")
-                                        .font(.caption)
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+                                } else {
+                                    Text(place.name ?? "Unknown")
+                                        .font(.headline)
                                 }
-                                Spacer()
-                                Text("\(place.distance, specifier: "%.1f") m")
+                                
+                                Text(place.location ?? "Unknown")
                                     .font(.caption)
                             }
-                            
+                            Spacer()
+                            Text("\(place.distance, specifier: "%.1f") m")
+                                .font(.caption)
+                        }
+                        .onTapGesture {
+                            selectedPlace = place
                         }
                     }
                 }
                 .listStyle(.plain)
             }
         }
-        
+        .sheet(item: $selectedPlace) { place in
+            if let index = arVM.places.firstIndex(where: { $0.id == place.id }) {
+                DetailView(place: $arVM.places[index])
+                    .environmentObject(savedPlacesVM)
+                    .environmentObject(locationManager)
+                
+            }
+            
+        }
     }
 }
 
