@@ -107,7 +107,7 @@ class ARLocationCoordinator: NSObject, ARSCNViewDelegate {
         
         // Create text geometry
         let textGeometry = SCNText(string: text, extrusionDepth: 1.0)
-        textGeometry.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        textGeometry.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         textGeometry.alignmentMode = CATextLayerAlignmentMode.center.rawValue
         textGeometry.firstMaterial?.diffuse.contents = UIColor.white
         textGeometry.firstMaterial?.specular.contents = UIColor.white

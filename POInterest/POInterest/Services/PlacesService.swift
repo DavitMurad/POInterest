@@ -26,7 +26,7 @@ enum PlaceCategoryEnum: String, CaseIterable{
     var iconName: (String, String) {
         switch self {
         case .restaurant:
-            return ("fork.knife", "Restuarant")
+            return ("fork.knife", "Restaurant")
         case .cafe:
             return ("cup.and.saucer", "Café")
         case .hotel:
