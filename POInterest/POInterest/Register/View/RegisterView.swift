@@ -16,7 +16,6 @@ struct RegisterView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Light gradient background
                 LinearGradient(
                     gradient: Gradient(colors: [
                         Color(.systemBackground),
@@ -131,9 +130,9 @@ struct RegisterView: View {
                             
                             
                             .padding(24)
-                            .background(.thinMaterial)
+                            .background(.thinMaterial.secondary)
                             .cornerRadius(20)
-                            .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+                            .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
                             .padding(.horizontal, 24)
                         }
                     }

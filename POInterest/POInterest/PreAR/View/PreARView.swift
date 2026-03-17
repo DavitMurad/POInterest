@@ -33,7 +33,8 @@ struct PreARView: View {
                     Label("Start AR Experience", systemImage: "camera.viewfinder")
                         .frame(height: 50)
                         .padding(.horizontal)
-                        .background(.background)
+                        .background(.tint)
+                        .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                         .shadow(color: .primary.opacity(0.2), radius: 5)
                 }

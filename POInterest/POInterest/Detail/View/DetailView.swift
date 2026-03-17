@@ -100,7 +100,8 @@ struct DetailView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 300)
+                .frame(maxHeight: .infinity)
+                .ignoresSafeArea()
             }
         }
         .onAppear {
@@ -169,10 +170,7 @@ struct AdditionalDataView: View {
         VStack(alignment: .leading, spacing: 5) {
             ForEach(additionalData.sorted(by: >), id: \.key) { key, value in
                 Section(header: Text(key)) {
-                    Rectangle()
-                        .fill(.secondary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 0.5)
+                    Divider()
                     if key == "Phone" {
                         Link(value, destination: URL(string: "tel::" + value)!)
                             .font(.caption)
