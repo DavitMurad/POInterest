@@ -11,7 +11,7 @@ The application overlays nearby entities — restaurants, stores, and leisure ve
 
 ## Demo Video
 
-https://github.com/user-attachments/assets/fd165a3b-8a41-4b0f-9e27-510f5b35b086
+[https://github.com/user-attachments/assets/fd165a3b-8a41-4b0f-9e27-510f5b35b086](https://github.com/user-attachments/assets/e1fd3326-28d0-4c9c-99be-b6c2997eaaca)
 
 The demo showcases:
 - AR-based spatial exploration
